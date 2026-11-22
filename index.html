@@ -1,0 +1,3340 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exponentialfunktioner: Formel, Graf &amp; Text</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root,
+    [data-theme="dark"] {
+      --bg-app: #0b1120;
+      --bg-surface: #111827;
+      --bg-elevated: #1e293b;
+      --bg-input: #0f172a;
+      --border-subtle: #334155;
+      --border-strong: #475569;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent-primary: #38bdf8;
+      --accent-primary-bg: rgba(56, 189, 248, 0.14);
+      --accent-primary-border: rgba(56, 189, 248, 0.45);
+      --accent-emerald: #34d399;
+      --accent-emerald-bg: rgba(52, 211, 153, 0.14);
+      --accent-rose: #fb7185;
+      --accent-rose-bg: rgba(251, 113, 133, 0.14);
+      --accent-amber: #fbbf24;
+      --grid-bg: #0f172a;
+      --grid-major: #334155;
+      --grid-axis: #94a3b8;
+      --grid-text: #cbd5e1;
+      --curve-f: #38bdf8;
+      --curve-g: #fbbf24;
+      --guide-line: #38bdf8;
+      --guide-pill: #0284c7;
+    }
+
+    [data-theme="light"] {
+      --bg-app: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-elevated: #f8fafc;
+      --bg-input: #ffffff;
+      --border-subtle: #cbd5e1;
+      --border-strong: #94a3b8;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent-primary: #0284c7;
+      --accent-primary-bg: rgba(2, 132, 199, 0.1);
+      --accent-primary-border: rgba(2, 132, 199, 0.45);
+      --accent-emerald: #059669;
+      --accent-emerald-bg: rgba(5, 150, 105, 0.1);
+      --accent-rose: #e11d48;
+      --accent-rose-bg: rgba(225, 29, 72, 0.09);
+      --accent-amber: #d97706;
+      --grid-bg: #ffffff;
+      --grid-major: #cbd5e1;
+      --grid-axis: #334155;
+      --grid-text: #1e293b;
+      --curve-f: #0284c7;
+      --curve-g: #d97706;
+      --guide-line: #0284c7;
+      --guide-pill: #0284c7;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      transition: background-color 0.18s ease, color 0.18s ease;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .surface-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .elevated-card {
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Rich contenteditable math input supporting true superscript */
+    .math-editor {
+      background-color: var(--bg-input);
+      border: 2px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 48px;
+      line-height: 1.5;
+      cursor: text;
+      white-space: pre-wrap;
+      word-break: break-word;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .math-editor:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-primary-bg);
+    }
+
+    .math-editor[data-disabled="true"] {
+      opacity: 0.72;
+      pointer-events: none;
+    }
+
+    .math-editor sup {
+      font-size: 0.74em;
+      vertical-align: super;
+      line-height: 0;
+      color: var(--accent-primary);
+      font-weight: 700;
+      padding: 0 1px;
+    }
+
+    .math-editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-muted);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .btn-neutral {
+      background-color: var(--bg-elevated);
+      border: 1.5px solid var(--border-strong);
+      color: var(--text-primary);
+      transition: transform 0.12s ease, border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .btn-neutral:hover:not(:disabled) {
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+    .btn-neutral-selected {
+      background-color: var(--accent-primary-bg);
+      border: 1.5px solid var(--accent-primary);
+      color: var(--text-primary);
+    }
+
+    .guide-handle {
+      cursor: grab;
+      touch-action: none;
+    }
+    .guide-handle:active {
+      cursor: grabbing;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in {
+      animation: fadeSlide 0.18s ease-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-sky-500/30">
+
+  <!-- TOP HEADER -->
+  <header class="surface-card border-x-0 border-t-0 sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 relative">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-8 rounded-lg flex items-center justify-center font-bold text-xs mono elevated-card"
+             style="color: var(--text-primary); border-color: var(--border-strong);">
+          C·a<sup>x</sup>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold leading-tight tracking-tight">
+            Exponentialfunktioner: Formel, Graf &amp; Text
+          </h1>
+          <p class="text-xs hidden sm:block" style="color: var(--text-muted);">
+            Startvärde <span class="mono">C</span>, förändringsfaktor <span class="mono">a</span>, upprepningar <span class="mono">x</span> och grafer
+          </p>
+        </div>
+      </div>
+
+      <!-- HEADER ACTION BUTTONS -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button id="toggleGuideBtn" type="button"
+                onclick="toggleDropdown('guide')"
+                class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium elevated-card hover:opacity-90 flex items-center gap-1.5 transition">
+          <span>📘</span>
+          <span>Formel &amp; FF-guide</span>
+          <span id="guideArrow" class="text-[10px] opacity-75">▼</span>
+        </button>
+
+        <button type="button"
+                onclick="openPositionModal()"
+                class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium elevated-card hover:opacity-90 flex items-center gap-1.5 transition">
+          <span>📊</span>
+          <span class="hidden sm:inline">Positionssystemet</span>
+          <span class="sm:hidden">Avrundning</span>
+        </button>
+
+        <button id="toggleCalcBtn" type="button"
+                onclick="toggleDropdown('calc')"
+                class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium elevated-card hover:opacity-90 flex items-center gap-1.5 transition">
+          <span>🧮</span>
+          <span>Miniräknare</span>
+          <span id="calcArrow" class="text-[10px] opacity-75">▼</span>
+        </button>
+
+        <button id="themeToggleBtn" type="button"
+                onclick="toggleTheme()"
+                title="Växla mellan mörkt läge och projektorvänligt ljust läge"
+                class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium elevated-card hover:opacity-90 flex items-center gap-1.5 transition">
+          <span id="themeIcon">☀️</span>
+          <span id="themeLabel" class="hidden md:inline">Ljust läge</span>
+        </button>
+      </div>
+
+      <!-- FLOATING OVERLAY 1: FORMULA & FF REFERENCE GUIDE -->
+      <div id="guideDropdown"
+           class="hidden absolute left-4 right-4 top-full mt-2 z-50 surface-card rounded-2xl p-4 shadow-2xl animate-in"
+           style="border-color: var(--border-strong);">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);">Snabbguide: Exponentialfunktioner</span>
+          <button type="button" onclick="toggleDropdown('guide')" class="text-xs hover:underline" style="color: var(--text-muted);">Stäng ✕</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs sm:text-sm">
+          <div class="rounded-xl p-3.5 elevated-card">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-sm sm:text-base">
+                1. Formeln f(x) = C · a<sup>x</sup>
+              </span>
+              <span class="mono whitespace-nowrap text-xs px-2 py-0.5 rounded font-semibold surface-card">
+                Upprepad procent
+              </span>
+            </div>
+            <ul class="space-y-1.5" style="color: var(--text-secondary);">
+              <li><strong style="color: var(--text-primary);">C = Startvärdet:</strong> Värdet från början (när <span class="mono">x = 0</span>). Här skär grafen <span class="mono">y</span>-axeln.</li>
+              <li><strong style="color: var(--text-primary);">a = Förändringsfaktorn (FF):</strong> Talet du multiplicerar med varje steg (<span class="mono">a &gt; 0</span>).</li>
+              <li><strong style="color: var(--text-primary);">x = Antal upprepningar:</strong> Hur många gånger förändringen sker (t.ex. år, timmar eller steg).</li>
+              <li><strong style="color: var(--text-primary);">Beräkna f(8):</strong> Sätt in <span class="mono">x = 8</span> och räkna ut <span class="mono">C · a<sup>8</sup></span> med miniräknaren.</li>
+            </ul>
+          </div>
+
+          <div class="rounded-xl p-3.5 elevated-card">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-sm sm:text-base">
+                2. Procent → FF &amp; Grafens form
+              </span>
+              <span class="mono whitespace-nowrap text-xs px-2 py-0.5 rounded font-semibold surface-card">
+                Uppåt / Nedåt
+              </span>
+            </div>
+            <ul class="space-y-1.5" style="color: var(--text-secondary);">
+              <li><strong style="color: var(--text-primary);">Ökning med p %:</strong> <span class="mono">a = 1 + p/100</span> (t.ex. +12 % → <span class="mono">a = 1,12</span>). För <span class="mono">C &gt; 0, a &gt; 1</span> böjer grafen <strong>uppåt</strong>.</li>
+              <li><strong style="color: var(--text-primary);">Minskning med p %:</strong> <span class="mono">a = 1 − p/100</span> (t.ex. −15 % → <span class="mono">a = 0,85</span>). För <span class="mono">C &gt; 0, 0 &lt; a &lt; 1</span> böjer grafen <strong>nedåt</strong>.</li>
+              <li><strong style="color: var(--text-primary);">Jämför grafer:</strong> <em>Linjär</em> (<span class="mono">kx + m</span>) = rät linje; <em>Exponential</em> (<span class="mono">C · a<sup>x</sup></span>) = böjd kurva; <em>Andragrads</em> (<span class="mono">ax<sup>2</sup> + bx + c</span>) = symmetrisk parabel.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLOATING OVERLAY 2: SCIENTIFIC CALCULATOR WITH EXPONENT KEY x^y -->
+      <div id="calcDropdown"
+           class="hidden absolute right-4 top-full mt-2 z-50 w-[calc(100vw-2rem)] max-w-xs surface-card rounded-2xl p-3.5 shadow-2xl animate-in"
+           style="border-color: var(--border-strong);">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);">Miniräknare (med x<sup>y</sup>)</span>
+          <button type="button" onclick="toggleDropdown('calc')" class="text-xs hover:underline" style="color: var(--text-muted);">Stäng ✕</button>
+        </div>
+        <div id="calcExpr" class="mono text-xs text-right h-4 truncate" style="color: var(--text-muted);"></div>
+        <div id="calcDisplay" class="mono text-xl font-semibold text-right px-2.5 py-1.5 rounded-lg mb-2 overflow-x-auto"
+             style="background-color: var(--bg-input); border: 1px solid var(--border-subtle);">0</div>
+        <div class="grid grid-cols-4 gap-1.5 mono text-sm font-semibold">
+          <button type="button" onclick="calcAction('C')" class="py-2 rounded-lg elevated-card hover:opacity-80">C</button>
+          <button type="button" onclick="calcAction('BACK')" class="py-2 rounded-lg elevated-card hover:opacity-80">⌫</button>
+          <button type="button" onclick="calcOp('^')" title="Upphöjt till (^)" class="py-2 rounded-lg font-bold"
+                  style="background-color: var(--accent-primary-bg); border: 1px solid var(--accent-primary-border); color: var(--accent-primary);">x<sup>y</sup></button>
+          <button type="button" onclick="calcOp('/')" class="py-2 rounded-lg elevated-card hover:opacity-80">÷</button>
+
+          <button type="button" onclick="calcDigit('7')" class="py-2 rounded-lg elevated-card hover:opacity-80">7</button>
+          <button type="button" onclick="calcDigit('8')" class="py-2 rounded-lg elevated-card hover:opacity-80">8</button>
+          <button type="button" onclick="calcDigit('9')" class="py-2 rounded-lg elevated-card hover:opacity-80">9</button>
+          <button type="button" onclick="calcOp('*')" class="py-2 rounded-lg elevated-card hover:opacity-80">×</button>
+
+          <button type="button" onclick="calcDigit('4')" class="py-2 rounded-lg elevated-card hover:opacity-80">4</button>
+          <button type="button" onclick="calcDigit('5')" class="py-2 rounded-lg elevated-card hover:opacity-80">5</button>
+          <button type="button" onclick="calcDigit('6')" class="py-2 rounded-lg elevated-card hover:opacity-80">6</button>
+          <button type="button" onclick="calcOp('-')" class="py-2 rounded-lg elevated-card hover:opacity-80">−</button>
+
+          <button type="button" onclick="calcDigit('1')" class="py-2 rounded-lg elevated-card hover:opacity-80">1</button>
+          <button type="button" onclick="calcDigit('2')" class="py-2 rounded-lg elevated-card hover:opacity-80">2</button>
+          <button type="button" onclick="calcDigit('3')" class="py-2 rounded-lg elevated-card hover:opacity-80">3</button>
+          <button type="button" onclick="calcOp('+')" class="py-2 rounded-lg elevated-card hover:opacity-80">+</button>
+
+          <button type="button" onclick="calcDigit('0')" class="py-2 rounded-lg elevated-card hover:opacity-80">0</button>
+          <button type="button" onclick="calcDot()" class="py-2 rounded-lg elevated-card hover:opacity-80">,</button>
+          <button type="button" onclick="calcAction('NEG')" class="py-2 rounded-lg elevated-card hover:opacity-80">+/−</button>
+          <button type="button" onclick="calcEquals()" class="py-2 rounded-lg font-bold text-white bg-sky-600 hover:bg-sky-500">=</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 4-PHASE NAVIGATION TABS -->
+  <nav class="max-w-5xl w-full mx-auto px-4 pt-3 pb-1">
+    <div id="phaseTabs" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <!-- Rendered by JS -->
+    </div>
+  </nav>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-2.5 flex flex-col">
+    <div id="workspace" class="surface-card rounded-2xl p-4 sm:p-6 flex-1 flex flex-col justify-between shadow-sm">
+      <!-- Rendered by JS -->
+    </div>
+  </main>
+
+  <!-- POSITIONSSYSTEMET & AVRUNDNING MODAL -->
+  <div id="positionModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 flex items-center justify-center p-4"
+       onclick="if(event.target === this) closePositionModal()">
+    <div class="surface-card rounded-2xl p-5 sm:p-6 max-w-xl w-full shadow-2xl animate-in space-y-4"
+         style="border-color: var(--border-strong);">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">📊</span>
+          <h2 class="text-base sm:text-lg font-bold">Positionssystemet &amp; Avrundning</h2>
+        </div>
+        <button type="button" onclick="closePositionModal()" class="text-xs px-2.5 py-1 rounded-lg elevated-card hover:opacity-80">Stäng ✕</button>
+      </div>
+
+      <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--text-secondary);">
+        Titta alltid på <strong>siffran direkt till höger</strong> om den position du ska avrunda till:
+        <br>• Siffra <strong>0, 1, 2, 3, 4</strong> → avrunda <strong>nedåt</strong> (behåll siffran).
+        <br>• Siffra <strong>5, 6, 7, 8, 9</strong> → avrunda <strong>uppåt</strong> (höj med 1).
+      </p>
+
+      <!-- Place value grid -->
+      <div class="overflow-x-auto rounded-xl elevated-card p-3">
+        <table class="w-full text-center border-collapse mono text-xs sm:text-sm">
+          <thead>
+            <tr style="color: var(--text-muted);">
+              <th class="pb-1.5 px-1.5 font-semibold">Hundratal</th>
+              <th class="pb-1.5 px-1.5 font-semibold">Tiotal</th>
+              <th class="pb-1.5 px-1.5 font-bold" style="color: var(--accent-emerald);">Ental<br><span class="text-[10px] font-normal">(heltal)</span></th>
+              <th class="pb-1.5 px-1 font-bold">,</th>
+              <th class="pb-1.5 px-1.5 font-bold" style="color: var(--accent-primary);">Tiondelar<br><span class="text-[10px] font-normal">(1:a dec.)</span></th>
+              <th class="pb-1.5 px-1.5 font-bold" style="color: var(--accent-amber);">Hundradelar<br><span class="text-[10px] font-normal">(2:a dec.)</span></th>
+              <th class="pb-1.5 px-1.5 font-semibold">Tusendelar<br><span class="text-[10px] font-normal">(3:e dec.)</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="text-lg sm:text-xl font-bold border-t" style="border-color: var(--border-subtle);">
+              <td class="pt-2">6</td>
+              <td class="pt-2">1</td>
+              <td class="pt-2 rounded-lg" style="background: var(--accent-emerald-bg); color: var(--accent-emerald);">1</td>
+              <td class="pt-2">,</td>
+              <td class="pt-2 rounded-lg" style="background: var(--accent-primary-bg); color: var(--accent-primary);">8</td>
+              <td class="pt-2 rounded-lg" style="background: rgba(251,191,36,0.14); color: var(--accent-amber);">4</td>
+              <td class="pt-2">7</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+        <div class="rounded-xl p-3 elevated-card">
+          <div class="font-bold mb-1" style="color: var(--accent-emerald);">Avrunda till heltal (ental)</div>
+          <p style="color: var(--text-secondary);">
+            Titta på <strong>tiondelssiffran</strong> (1:a decimalen):
+            <br><span class="mono">611,<strong>8</strong>47 → <strong>612</strong></span> (eftersom 8 ≥ 5)
+            <br><span class="mono">611,<strong>3</strong>9 → <strong>611</strong></span> (eftersom 3 &lt; 5)
+          </p>
+        </div>
+        <div class="rounded-xl p-3 elevated-card">
+          <div class="font-bold mb-1" style="color: var(--accent-primary);">Avrunda till en decimal (tiondel)</div>
+          <p style="color: var(--text-secondary);">
+            Titta på <strong>hundradelssiffran</strong> (2:a decimalen):
+            <br><span class="mono">611,8<strong>4</strong>7 → <strong>611,8</strong></span> (eftersom 4 &lt; 5)
+            <br><span class="mono">611,8<strong>6</strong>2 → <strong>611,9</strong></span> (eftersom 6 ≥ 5)
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" onclick="closePositionModal()"
+                class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-sky-600 hover:bg-sky-500">
+          Jag förstår
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBTLE FOOTER -->
+  <footer class="max-w-5xl w-full mx-auto px-4 py-2 text-[11px] flex flex-wrap items-center justify-between gap-2" style="color: var(--text-muted);">
+    <span>Exponentialfunktioner · <span class="mono">f(x) = C · a<sup>x</sup></span> · Linjära &amp; kvadratiska grafer</span>
+    <span class="hidden sm:inline">Lärargenvägar: <kbd class="px-1 py-0.5 rounded elevated-card mono">Shift+L</kbd> lås upp alla · <kbd class="px-1 py-0.5 rounded elevated-card mono">Shift+F</kbd> nästa uppgift</span>
+  </footer>
+
+  <script>
+    // =========================================================
+    // 1. STATE & CONSTANTS
+    // =========================================================
+    const PHASES = [
+      { id: 1, title: '1. Begrepp, FF & Riktning', target: 10 },
+      { id: 2, title: '2. Guidad', target: 8 },
+      { id: 3, title: '3. Direkt', target: 8 },
+      { id: 4, title: '4. Grafer A–D', target: 6 }
+    ];
+
+    const state = {
+      theme: 'dark',
+      activeDropdown: null, // 'guide' | 'calc' | null
+      currentPhase: 1,
+      unlockedPhases: { 1: true, 2: false, 3: false, 4: false },
+      progress: { 1: 0, 2: 0, 3: 0, 4: 0 },
+      completedCelebrated: { 1: false, 2: false, 3: false, 4: false },
+
+      // Balanced queues & non-repeat signature history
+      phase1TypeQueue: [],
+      phase2TypeQueue: [],
+      phase3TypeQueue: [],
+      phase4TypeQueue: [],
+      recentSignatures: [],
+
+      // Fading support counter for graph-type button hints in Fas 3
+      graphMatchSolvedCount: 0,
+
+      // Current task object
+      task: null,
+
+      // Editor state (HTML for contenteditable math editor)
+      editorHtml: '',
+      isSuperscriptMode: false,
+
+      // Phase 1 state
+      phase1Answered: false,
+      phase1Correct: false,
+      phase1Choice: null,
+
+      // Phase 2 two-step Formel · Beräkna state (step 1 = show substitution, step 2 = calculate value)
+      calcStep: 1,
+      substitutedLineHtml: '',
+
+      // Optional step-by-step scaffold (only opened if student requests or on structural failure)
+      showOptionalScaffold: false,
+      scaffoldStep1Done: false,
+      scaffoldStep2Done: false,
+
+      // Two-part text task state ('a' | 'b' | null)
+      subPart: null,
+      partADone: false,
+
+      // Multiple-choice state (for word interpretation)
+      awaitingInterpretation: false,
+      interpretationDone: false,
+      interpretationSelectedIdx: null,
+
+      // Phase 3 single-graph dual-match selections
+      selectedFuncType: null,
+      selectedEqIdx: null,
+
+      // Phase 4 four-graph (A-D) matching selections
+      abcdSelections: { A: '', B: '', C: '', D: '' },
+
+      // General task state
+      taskSolved: false,
+      feedback: null, // { type: 'success'|'error'|'warn', title: string, detail: string, showPositionBtn?: boolean, showScaffoldBtn?: boolean }
+
+      // Interactive graph guide lines
+      guideX: 2,
+      guideY: 4,
+      guideXVisible: false,
+      guideYVisible: false
+    };
+
+    function mSpan(html) {
+      return `<span class="mono whitespace-nowrap">${html}</span>`;
+    }
+
+    function rememberSignature(sig) {
+      state.recentSignatures.push(sig);
+      if (state.recentSignatures.length > 18) {
+        state.recentSignatures.shift();
+      }
+    }
+
+    function hasRecentSignature(sig) {
+      return state.recentSignatures.includes(sig);
+    }
+
+    // =========================================================
+    // 2. THEME, DROPDOWNS, POSITION MODAL & CALCULATOR
+    // =========================================================
+    function toggleTheme() {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', state.theme);
+      document.getElementById('themeIcon').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+      document.getElementById('themeLabel').textContent = state.theme === 'dark' ? 'Ljust läge' : 'Mörkt läge';
+      renderWorkspace();
+    }
+
+    function toggleDropdown(name) {
+      state.activeDropdown = state.activeDropdown === name ? null : name;
+      document.getElementById('guideDropdown').classList.toggle('hidden', state.activeDropdown !== 'guide');
+      document.getElementById('calcDropdown').classList.toggle('hidden', state.activeDropdown !== 'calc');
+      document.getElementById('guideArrow').textContent = state.activeDropdown === 'guide' ? '▲' : '▼';
+      document.getElementById('calcArrow').textContent = state.activeDropdown === 'calc' ? '▲' : '▼';
+    }
+
+    function openPositionModal() {
+      document.getElementById('positionModal').classList.remove('hidden');
+    }
+
+    function closePositionModal() {
+      document.getElementById('positionModal').classList.add('hidden');
+    }
+
+    // Precedence-aware calculator (evaluates x^y before * and /)
+    const calcState = {
+      tokens: [],
+      current: '0',
+      resetNext: false,
+      lastExprDisplay: ''
+    };
+
+    function formatCalcTokens(tokens) {
+      const opMap = { '+': '+', '-': '−', '*': '·', '/': '÷', '^': '^' };
+      return tokens.map(tok => typeof tok === 'number' ? fmtNum(tok) : (opMap[tok] || tok)).join(' ');
+    }
+
+    function updateCalcUI() {
+      const disp = document.getElementById('calcDisplay');
+      const expr = document.getElementById('calcExpr');
+      if (!disp) return;
+      disp.textContent = formatSwedishNum(calcState.current);
+      expr.textContent = calcState.tokens.length > 0
+        ? formatCalcTokens(calcState.tokens)
+        : calcState.lastExprDisplay;
+    }
+
+    function calcDigit(d) {
+      if (calcState.resetNext || calcState.current === 'Fel') {
+        calcState.current = d;
+        calcState.resetNext = false;
+        if (calcState.tokens.length === 0) calcState.lastExprDisplay = '';
+      } else {
+        calcState.current = calcState.current === '0'
+          ? d
+          : (calcState.current.length < 13 ? calcState.current + d : calcState.current);
+      }
+      updateCalcUI();
+    }
+
+    function calcDot() {
+      if (calcState.resetNext || calcState.current === 'Fel') {
+        calcState.current = '0.';
+        calcState.resetNext = false;
+      } else if (!calcState.current.includes('.')) {
+        calcState.current += '.';
+      }
+      updateCalcUI();
+    }
+
+    function calcOp(op) {
+      if (calcState.current === 'Fel') {
+        calcAction('C');
+        return;
+      }
+      const num = parseFloat(calcState.current);
+      if (!Number.isFinite(num)) return;
+
+      if (calcState.resetNext && calcState.tokens.length >= 2) {
+        calcState.tokens[calcState.tokens.length - 1] = op;
+      } else {
+        calcState.tokens.push(num, op);
+        calcState.resetNext = true;
+      }
+      updateCalcUI();
+    }
+
+    function evaluateCalcTokens(fullTokens) {
+      let pass1 = [...fullTokens];
+      for (let i = pass1.length - 2; i >= 1; i -= 2) {
+        if (pass1[i] === '^') {
+          const val = Math.pow(pass1[i - 1], pass1[i + 1]);
+          pass1.splice(i - 1, 3, val);
+        }
+      }
+      let pass2 = [pass1[0]];
+      for (let i = 1; i < pass1.length; i += 2) {
+        const op = pass1[i];
+        const rhs = pass1[i + 1];
+        if (op === '*') pass2[pass2.length - 1] *= rhs;
+        else if (op === '/') {
+          if (rhs === 0) return 'Fel';
+          pass2[pass2.length - 1] /= rhs;
+        } else {
+          pass2.push(op, rhs);
+        }
+      }
+      let result = pass2[0];
+      for (let i = 1; i < pass2.length; i += 2) {
+        if (pass2[i] === '+') result += pass2[i + 1];
+        if (pass2[i] === '-') result -= pass2[i + 1];
+      }
+      return Number.isFinite(result) ? Math.round(result * 1e6) / 1e6 : 'Fel';
+    }
+
+    function calcEquals() {
+      if (calcState.tokens.length === 0) return;
+      const num = parseFloat(calcState.current);
+      if (!Number.isFinite(num)) return;
+      const fullTokens = [...calcState.tokens, num];
+      calcState.lastExprDisplay = formatCalcTokens(fullTokens) + ' =';
+      const res = evaluateCalcTokens(fullTokens);
+      calcState.current = String(res);
+      calcState.tokens = [];
+      calcState.resetNext = true;
+      updateCalcUI();
+    }
+
+    function calcAction(act) {
+      if (act === 'C') {
+        calcState.tokens = [];
+        calcState.current = '0';
+        calcState.resetNext = false;
+        calcState.lastExprDisplay = '';
+      } else if (act === 'BACK') {
+        if (!calcState.resetNext && calcState.current !== 'Fel') {
+          calcState.current = calcState.current.length > 1 ? calcState.current.slice(0, -1) : '0';
+          if (calcState.current === '-') calcState.current = '0';
+        }
+      } else if (act === 'NEG') {
+        if (calcState.current !== '0' && calcState.current !== 'Fel') {
+          calcState.current = calcState.current.startsWith('-')
+            ? calcState.current.slice(1)
+            : '-' + calcState.current;
+        }
+      }
+      updateCalcUI();
+    }
+
+    // =========================================================
+    // 3. MATH FORMATTING, DECIMAL ANALYSIS & SUPERSCRIPT EDITOR
+    // =========================================================
+    function fmtNum(n) {
+      if (typeof n === 'number') {
+        if (Object.is(n, -0)) n = 0;
+        if (n < 0) return `−${fmtNum(Math.abs(n))}`;
+        const rounded = Math.round(n * 1e6) / 1e6;
+        const str = String(rounded).replace('.', ',');
+        const parts = str.split(',');
+        if (parts[0].length >= 4) {
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+        return parts.join(',');
+      }
+      return String(n).replace(/-/g, '−');
+    }
+
+    function formatSwedishNum(str) {
+      return String(str).replace(/-/g, '−').replace(/\./g, ',');
+    }
+
+    function normalizeAscii(str) {
+      const supMap = {
+        '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
+        '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+        'ˣ': 'x', 'ᵗ': 't', '⁻': '-', '⁺': '+'
+      };
+      let s = String(str || '').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹ˣᵗ⁻⁺]/g, ch => `^${supMap[ch]}`);
+      // Collapse consecutive ^ from multi-char Unicode superscripts like ¹⁰ -> ^10
+      s = s.replace(/\^([0-9xt\-+])\^([0-9xt\-+])/g, '^$1$2');
+      return s
+        .trim()
+        .replace(/[\u2212\u2013\u2014]/g, '-')
+        .replace(/[\u00B7\u22C5×*]/g, '*')
+        .replace(/,/g, '.')
+        .replace(/\s+/g, '');
+    }
+
+    // Serializes the contenteditable .math-editor DOM into normalized math text (turning <sup> into ^(...))
+    function getEditorNormalizedString() {
+      const ed = document.getElementById('mathEditor');
+      if (!ed) return '';
+      let raw = '';
+      function walk(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          raw += node.textContent.replace(/\u200B/g, '');
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName === 'SUP') {
+            const inner = node.textContent.replace(/\u200B/g, '').trim();
+            if (inner.length > 0) {
+              raw += `^(${inner})`;
+            }
+          } else if (node.tagName === 'BR') {
+            // ignore line breaks
+          } else {
+            node.childNodes.forEach(walk);
+          }
+        }
+      }
+      ed.childNodes.forEach(walk);
+      return normalizeAscii(raw);
+    }
+
+    function syncEditorStateFromDom() {
+      const ed = document.getElementById('mathEditor');
+      if (!ed) return;
+      state.editorHtml = ed.innerHTML;
+      state.isSuperscriptMode = isCaretInsideSup();
+      updateSupButtonVisual();
+    }
+
+    function isCaretInsideSup() {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return false;
+      let node = sel.anchorNode;
+      const ed = document.getElementById('mathEditor');
+      while (node && node !== ed) {
+        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SUP') return true;
+        node = node.parentNode;
+      }
+      return false;
+    }
+
+    function updateSupButtonVisual() {
+      const btn = document.getElementById('supToggleBtn');
+      const hint = document.getElementById('supModeIndicator');
+      if (btn) {
+        if (state.isSuperscriptMode) {
+          btn.style.backgroundColor = 'var(--accent-primary-bg)';
+          btn.style.borderColor = 'var(--accent-primary)';
+          btn.style.color = 'var(--accent-primary)';
+        } else {
+          btn.style.backgroundColor = '';
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }
+      }
+      if (hint) {
+        hint.classList.toggle('hidden', !state.isSuperscriptMode);
+      }
+    }
+
+    function exitSuperscriptAtCaret() {
+      const ed = document.getElementById('mathEditor');
+      if (!ed) return;
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+
+      let supNode = null;
+      let node = sel.anchorNode;
+      while (node && node !== ed) {
+        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SUP') {
+          supNode = node;
+          break;
+        }
+        node = node.parentNode;
+      }
+      if (!supNode) return;
+
+      // Remove empty zero-width placeholders if nothing was typed inside sup
+      if (supNode.textContent.replace(/\u200B/g, '').trim() === '') {
+        const parent = supNode.parentNode;
+        const space = document.createTextNode('');
+        parent.replaceChild(space, supNode);
+        const r = document.createRange();
+        r.setStart(space, 0);
+        r.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(r);
+      } else {
+        // Place caret right after the <sup> element
+        const afterText = document.createTextNode('\u200B');
+        if (supNode.nextSibling) {
+          supNode.parentNode.insertBefore(afterText, supNode.nextSibling);
+        } else {
+          supNode.parentNode.appendChild(afterText);
+        }
+        const r = document.createRange();
+        r.setStart(afterText, 1);
+        r.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(r);
+      }
+      state.isSuperscriptMode = false;
+      state.editorHtml = ed.innerHTML;
+      updateSupButtonVisual();
+    }
+
+    function toggleSuperscriptMode() {
+      const ed = document.getElementById('mathEditor');
+      if (!ed) return;
+      ed.focus();
+
+      if (isCaretInsideSup()) {
+        exitSuperscriptAtCaret();
+        return;
+      }
+
+      const sel = window.getSelection();
+      let range;
+      if (sel && sel.rangeCount > 0 && ed.contains(sel.anchorNode)) {
+        range = sel.getRangeAt(0);
+      } else {
+        range = document.createRange();
+        range.selectNodeContents(ed);
+        range.collapse(false);
+      }
+
+      range.deleteContents();
+      const sup = document.createElement('sup');
+      const zwsp = document.createTextNode('\u200B');
+      sup.appendChild(zwsp);
+      range.insertNode(sup);
+
+      const newRange = document.createRange();
+      newRange.setStart(zwsp, 1);
+      newRange.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+
+      state.isSuperscriptMode = true;
+      state.editorHtml = ed.innerHTML;
+      updateSupButtonVisual();
+    }
+
+    function insertSnippet(snippet) {
+      const ed = document.getElementById('mathEditor');
+      if (!ed) return;
+      ed.focus();
+
+      if (snippet === '^') {
+        toggleSuperscriptMode();
+        return;
+      }
+
+      // If inserting an operator like +, −, =, · while inside superscript, exit superscript first
+      if ([' + ', ' − ', ' = ', ' · '].includes(snippet) && isCaretInsideSup()) {
+        exitSuperscriptAtCaret();
+      }
+
+      const sel = window.getSelection();
+      let range;
+      if (sel && sel.rangeCount > 0 && ed.contains(sel.anchorNode)) {
+        range = sel.getRangeAt(0);
+      } else {
+        range = document.createRange();
+        range.selectNodeContents(ed);
+        range.collapse(false);
+      }
+      range.deleteContents();
+
+      if (snippet.endsWith('() = ')) {
+        const prefix = snippet.slice(0, -5);
+        const beforeParen = document.createTextNode(`${prefix}(`);
+        const afterParen = document.createTextNode(`) = `);
+        range.insertNode(afterParen);
+        range.insertNode(beforeParen);
+
+        const caretRange = document.createRange();
+        caretRange.setStartAfter(beforeParen);
+        caretRange.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(caretRange);
+      } else {
+        const txt = document.createTextNode(snippet);
+        range.insertNode(txt);
+        const caretRange = document.createRange();
+        caretRange.setStartAfter(txt);
+        caretRange.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(caretRange);
+      }
+
+      syncEditorStateFromDom();
+    }
+
+    function handleEditorKeyDown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (state.currentPhase === 2) checkPhase2Answer();
+        else if (state.currentPhase === 3) checkPhase3Answer();
+        return;
+      }
+
+      if (e.key === '^') {
+        e.preventDefault();
+        toggleSuperscriptMode();
+        return;
+      }
+
+      if (isCaretInsideSup()) {
+        if (e.key === ' ' || e.key === 'ArrowRight' || ['+', '-', '=', '*'].includes(e.key)) {
+          if (e.key === ' ' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            exitSuperscriptAtCaret();
+          } else {
+            exitSuperscriptAtCaret();
+          }
+        }
+      }
+    }
+
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function randChoice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function formatExpFormulaHtml(c, a, fnName = 'f', varChar = 'x') {
+      return `${fnName}(${varChar}) = ${fmtNum(c)} · ${fmtNum(a)}<sup>${varChar}</sup>`;
+    }
+
+    function formatExpFormulaPlain(c, a, fnName = 'f', varChar = 'x') {
+      return `${fnName}(${varChar}) = ${fmtNum(c)} · ${fmtNum(a)}^${varChar}`;
+    }
+
+    // Determines exact decimal count of C * a^x (cleaning float precision artifacts)
+    function analyzeExactValue(c, a, x) {
+      const raw = c * Math.pow(a, x);
+      const clean = Math.round(raw * 1e7) / 1e7;
+      const str = String(clean);
+      const decPart = str.includes('.') ? str.split('.')[1] : '';
+      return {
+        raw: clean,
+        exactDecimals: decPart.length
+      };
+    }
+
+    // Evaluates student-written exponential expressions like C * a^x (supports ^(x) and ^x)
+    function evaluateExponentialRhsVar(rhsNorm, varChar, expectedC, expectedA) {
+      const vLow = varChar.toLowerCase();
+      let expr = rhsNorm.toLowerCase();
+
+      expr = expr.replace(/(\d)\(/g, '$1*(');
+      expr = expr.replace(/\)\(/g, ')*(');
+      expr = expr.replace(/\^([0-9a-z.\-+]+)/g, '^($1)');
+
+      if (!expr.includes('^')) {
+        if (expr.includes(vLow)) {
+          return { valid: false, reason: 'linear_instead_of_exp' };
+        }
+        return { valid: false, reason: 'invalid' };
+      }
+
+      const allowedRegex = new RegExp(`^[0-9${vLow}+\\-*^().]+$`);
+      if (!allowedRegex.test(expr)) {
+        return { valid: false, reason: 'invalid' };
+      }
+
+      const caretIdx = expr.indexOf('^');
+      if (!expr.slice(caretIdx + 1).includes(vLow)) {
+        return { valid: false, reason: 'missing_var_in_exp' };
+      }
+
+      const jsExpr = expr.replace(/\^/g, '**');
+
+      let y0, y1, y2, y3;
+      try {
+        const fn = new Function(vLow, `return ${jsExpr};`);
+        y0 = fn(0);
+        y1 = fn(1);
+        y2 = fn(2);
+        y3 = fn(3);
+      } catch (e) {
+        return { valid: false, reason: 'invalid' };
+      }
+
+      if (![y0, y1, y2, y3].every(Number.isFinite)) {
+        return { valid: false, reason: 'invalid' };
+      }
+
+      const exp0 = expectedC;
+      const exp1 = expectedC * expectedA;
+      const exp2 = expectedC * Math.pow(expectedA, 2);
+      const exp3 = expectedC * Math.pow(expectedA, 3);
+      const close = (u, v) => Math.abs(u - v) <= Math.max(1e-4, Math.abs(v) * 1e-4);
+
+      if (close(y0, exp0) && close(y1, exp1) && close(y2, exp2) && close(y3, exp3)) {
+        return { valid: true };
+      }
+
+      // Check if C and a were swapped: e.g. 0.85 * 22000^x
+      if (close(y0, expectedA) && close(y1, expectedA * expectedC)) {
+        return { valid: false, reason: 'swapped_c_a' };
+      }
+
+      // Check if start value C matches (y0 ≈ expectedC) but student used raw percentage p or p/100 as base 'a'
+      if (close(y0, expectedC) && y0 !== 0) {
+        const impliedA = y1 / y0;
+        const pctDiff = Math.abs(expectedA - 1);
+        const pctWhole = Math.round(pctDiff * 100);
+        if (close(impliedA, pctDiff) || close(impliedA, pctWhole)) {
+          return { valid: false, reason: 'percent_not_ff' };
+        }
+      }
+
+      return { valid: false, reason: 'wrong_value' };
+    }
+
+    // Validates Step 1 substitution in Formel · Beräkna: e.g. f(8) = 200 * 1.15^(8)
+    function validateSubstitutionExpression(normStr, fnName, argVal, expectedC, expectedA) {
+      const fnLow = fnName.toLowerCase();
+      const parts = normStr.split('=');
+      const expectedLhs = `${fnLow}(${argVal})`;
+
+      if (parts.length !== 2 || parts[0].toLowerCase() !== expectedLhs) {
+        return { valid: false, reason: 'bad_lhs' };
+      }
+
+      let rhs = parts[1].toLowerCase();
+      rhs = rhs.replace(/(\d)\(/g, '$1*(').replace(/\)\(/g, ')*(');
+      rhs = rhs.replace(/\^([0-9.\-+]+)/g, '^($1)');
+
+      if (!rhs.includes('^')) {
+        return { valid: false, reason: 'no_power' };
+      }
+      if (!/^[0-9+\-*^().]+$/.test(rhs)) {
+        return { valid: false, reason: 'invalid' };
+      }
+
+      try {
+        const jsExpr = rhs.replace(/\^/g, '**');
+        const val = new Function(`return ${jsExpr};`)();
+        const expectedVal = expectedC * Math.pow(expectedA, argVal);
+        if (Number.isFinite(val) && Math.abs(val - expectedVal) <= Math.max(1e-4, Math.abs(expectedVal) * 1e-4)) {
+          return { valid: true };
+        }
+      } catch (e) {
+        return { valid: false, reason: 'invalid' };
+      }
+
+      return { valid: false, reason: 'wrong_value' };
+    }
+
+    function parseNumericAnswer(normLower, fnLower, varLower, argVal, unitAliases = []) {
+      let rhs = normLower;
+      const prefixes = [
+        `${fnLower}(${argVal})=`,
+        `${fnLower}(${varLower})=`,
+        `y=`
+      ];
+      let hadPrefix = false;
+      for (const p of prefixes) {
+        if (rhs.startsWith(p)) {
+          rhs = rhs.slice(p.length);
+          hadPrefix = true;
+          break;
+        }
+      }
+
+      let hadUnit = false;
+      for (const u of unitAliases) {
+        const uLow = normalizeAscii(u).toLowerCase();
+        if (rhs.endsWith(uLow) && rhs.length > uLow.length) {
+          rhs = rhs.slice(0, -uLow.length);
+          hadUnit = true;
+          break;
+        }
+      }
+
+      const num = Number(rhs);
+      if (!Number.isFinite(num)) return null;
+      const decCount = rhs.includes('.') ? rhs.split('.')[1].length : 0;
+      return { num, hadPrefix, hadUnit, decCount };
+    }
+
+    // =========================================================
+    // 4. PHASE 1 GENERATORS (CONCEPTS C, a, x, % -> FF, DIRECTION)
+    // =========================================================
+    function buildPhase1Task() {
+      if (state.phase1TypeQueue.length === 0) {
+        state.phase1TypeQueue = shuffle([
+          'identify_param', 'identify_param', 'identify_param',
+          'pct_to_ff', 'pct_to_ff', 'pct_to_ff',
+          'direction_formula', 'direction_formula',
+          'direction_graph', 'direction_graph'
+        ]);
+      }
+      const subtype = state.phase1TypeQueue.pop();
+
+      if (subtype === 'identify_param') {
+        const c = randChoice([80, 120, 250, 320, 400, 600, 950, 1200, 2500, 4500, 15000]);
+        const a = randChoice([0.75, 0.82, 0.85, 0.92, 1.04, 1.08, 1.15, 1.25, 1.35]);
+        const formulaHtml = formatExpFormulaHtml(c, a);
+        const askWhich = randChoice(['C', 'a', 'x']);
+
+        if (askWhich === 'C') {
+          const correctRight = Math.random() < 0.5;
+          return {
+            rep: 'concept',
+            badge: 'Formel · Begrepp',
+            prompt: `I exponentialfunktionen ${mSpan(formulaHtml)}, vilket tal är <strong>startvärdet (C)</strong>?`,
+            optA: correctRight ? fmtNum(a) : fmtNum(c),
+            optB: correctRight ? fmtNum(c) : fmtNum(a),
+            correctChoice: correctRight ? 'B' : 'A',
+            explanation: `I formeln f(x) = C · aˣ står C framför potensen och anger startvärdet då x = 0. Här är C = ${fmtNum(c)} och förändringsfaktorn a = ${fmtNum(a)}.`
+          };
+        } else if (askWhich === 'a') {
+          const correctRight = Math.random() < 0.5;
+          return {
+            rep: 'concept',
+            badge: 'Formel · Begrepp',
+            prompt: `I exponentialfunktionen ${mSpan(formulaHtml)}, vilket tal är <strong>förändringsfaktorn (FF / a)</strong>?`,
+            optA: correctRight ? fmtNum(c) : fmtNum(a),
+            optB: correctRight ? fmtNum(a) : fmtNum(c),
+            correctChoice: correctRight ? 'B' : 'A',
+            explanation: `Förändringsfaktorn a är basen i potensen aˣ (talet som multipliceras upprepade gånger). Här är a = ${fmtNum(a)} och startvärdet C = ${fmtNum(c)}.`
+          };
+        } else {
+          const correctRight = Math.random() < 0.5;
+          const labelCorrect = 'Antal gånger förändringen upprepas';
+          const labelWrong = 'Startvärdet från början';
+          return {
+            rep: 'concept',
+            badge: 'Formel · Begrepp',
+            prompt: `I exponentialfunktionen ${mSpan('f(x) = C · a<sup>x</sup>')}, vad står variabeln <strong>x</strong> för?`,
+            optA: correctRight ? labelWrong : labelCorrect,
+            optB: correctRight ? labelCorrect : labelWrong,
+            correctChoice: correctRight ? 'B' : 'A',
+            explanation: `Exponenten x anger hur många gånger förändringen upprepas (t.ex. antal år, timmar eller steg), medan C är startvärdet.`
+          };
+        }
+      }
+
+      if (subtype === 'pct_to_ff') {
+        const scenarios = [
+          { pct: 15, dir: 'up', ff: 1.15, trap: '0,15', context: 'Priset på en konsertbiljett ökar med 15 %.' },
+          { pct: 8, dir: 'up', ff: 1.08, trap: '0,08', context: 'Ett sparkonto växer med 8 % ränta per år.' },
+          { pct: 25, dir: 'up', ff: 1.25, trap: '0,25', context: 'Antalet bakterier ökar med 25 % varje timme.' },
+          { pct: 4, dir: 'up', ff: 1.04, trap: '1,4', context: 'Folkmängden i en kommun ökar med 4 % per år.' },
+          { pct: 12, dir: 'down', ff: 0.88, trap: '0,12', context: 'Värdet på en dator minskar med 12 % per år.' },
+          { pct: 20, dir: 'down', ff: 0.8, trap: '0,20', context: 'En jacka reas ut och priset sänks med 20 %.' },
+          { pct: 15, dir: 'down', ff: 0.85, trap: '0,15', context: 'En bil tappar 15 % av sitt värde varje år.' },
+          { pct: 6, dir: 'down', ff: 0.94, trap: '0,06', context: 'Mängden läkemedel i kroppen minskar med 6 % per timme.' }
+        ];
+        const tpl = randChoice(scenarios);
+        const correctRight = Math.random() < 0.5;
+        const ffStr = fmtNum(tpl.ff);
+        return {
+          rep: 'concept',
+          badge: 'Procent → FF',
+          prompt: `${tpl.context} Vilken <strong>förändringsfaktor (a)</strong> motsvarar detta?`,
+          optA: correctRight ? tpl.trap : ffStr,
+          optB: correctRight ? ffStr : tpl.trap,
+          correctChoice: correctRight ? 'B' : 'A',
+          explanation: tpl.dir === 'up'
+            ? `Vid en ökning med ${tpl.pct} % blir den nya andelen 100 % + ${tpl.pct} % = ${100 + tpl.pct} %, vilket ger förändringsfaktorn a = ${ffStr}.`
+            : `Vid en minskning med ${tpl.pct} % återstår 100 % − ${tpl.pct} % = ${100 - tpl.pct} %, vilket ger förändringsfaktorn a = ${ffStr}.`
+        };
+      }
+
+      if (subtype === 'direction_formula') {
+        const isUp = Math.random() < 0.5;
+        const c = randChoice([200, 500, 1200, 3000]);
+        const a = isUp ? randChoice([1.08, 1.15, 1.25, 1.4]) : randChoice([0.75, 0.82, 0.88, 0.92]);
+        const formulaHtml = formatExpFormulaHtml(c, a);
+        return {
+          rep: 'concept',
+          badge: 'Grafens riktning',
+          prompt: `Hur ser grafen ut för funktionen ${mSpan(formulaHtml)}?`,
+          optA: 'Böjer uppåt (ökning)',
+          optB: 'Böjer nedåt (minskning)',
+          correctChoice: isUp ? 'A' : 'B',
+          explanation: isUp
+            ? `Eftersom förändringsfaktorn a = ${fmtNum(a)} är större än 1 (a > 1) ökar värdet för varje steg och grafen böjer uppåt.`
+            : `Eftersom förändringsfaktorn a = ${fmtNum(a)} ligger mellan 0 och 1 (0 < a < 1) minskar värdet för varje steg och grafen böjer nedåt.`
+        };
+      }
+
+      // direction_graph (dynamic C and a)
+      const isUp = Math.random() < 0.5;
+      const c = isUp ? randChoice([1, 1.5, 2]) : randChoice([7, 8, 9]);
+      const a = isUp ? randChoice([1.4, 1.5, 1.6]) : randChoice([0.55, 0.65, 0.7]);
+      return {
+        rep: 'graph',
+        badge: 'Graf · Ökning eller minskning',
+        fn: (x) => c * Math.pow(a, x),
+        xMin: 0, xMax: 5, yMin: 0, yMax: 10,
+        prompt: `Titta på exponentialgrafen. Vilket påstående stämmer om förändringsfaktorn <strong>a</strong>?`,
+        optA: 'a > 1 (ökning, grafen går uppåt)',
+        optB: '0 < a < 1 (minskning, grafen går nedåt)',
+        correctChoice: isUp ? 'A' : 'B',
+        explanation: isUp
+          ? `Grafen stiger och böjer uppåt åt höger. Det betyder att funktionsvärdet ökar och att förändringsfaktorn a > 1.`
+          : `Grafen sjunker och böjer nedåt åt höger. Det betyder att funktionsvärdet minskar och att förändringsfaktorn 0 < a < 1.`
+      };
+    }
+
+    // =========================================================
+    // 5. DYNAMIC GENERATORS FOR FAS 2 (GUIDED) & FAS 3 (DIREKT)
+    // =========================================================
+    function buildDynamicFormulaCalcTask(isGuidedTwoStep) {
+      let c, a, x, sig, attempts = 0;
+      const cPool = [120, 150, 200, 250, 350, 400, 500, 640, 800, 1200, 1500, 2500, 4000, 5000];
+      const aPool = [0.75, 0.8, 0.85, 0.88, 0.92, 1.04, 1.06, 1.08, 1.1, 1.12, 1.15, 1.2, 1.25];
+      const xPool = [2, 3, 4, 6, 8, 10];
+
+      do {
+        attempts++;
+        c = randChoice(cPool);
+        a = randChoice(aPool);
+        x = randChoice(xPool);
+        sig = `calc:${c}:${a}:${x}`;
+      } while (hasRecentSignature(sig) && attempts < 50);
+      rememberSignature(sig);
+
+      const { raw, exactDecimals } = analyzeExactValue(c, a, x);
+
+      // NEVER ask students to round if the answer already has 0 or 1 decimal places!
+      let targetDecimals = 0;
+      let expectedVal = raw;
+      let roundPrompt = '';
+
+      if (exactDecimals === 0) {
+        targetDecimals = 0;
+        expectedVal = raw;
+        roundPrompt = '';
+      } else if (exactDecimals === 1) {
+        targetDecimals = 1;
+        expectedVal = raw;
+        roundPrompt = '';
+      } else {
+        // Has >= 2 decimals: decide between integer rounding (for larger numbers) or 1-decimal rounding
+        if (raw >= 100 || Math.random() < 0.65) {
+          targetDecimals = 0;
+          expectedVal = Math.round(raw);
+          roundPrompt = ' Avrunda till heltal.';
+        } else {
+          targetDecimals = 1;
+          expectedVal = Math.round(raw * 10) / 10;
+          roundPrompt = ' Avrunda till en decimal.';
+        }
+      }
+
+      const formulaHtml = formatExpFormulaHtml(c, a);
+      const subHtml = `f(${x}) = ${fmtNum(c)} · ${fmtNum(a)}<sup>${x}</sup>`;
+
+      return {
+        rep: 'formula',
+        mode: isGuidedTwoStep ? 'guided_two_step_calc' : 'direct_calc',
+        badge: 'Formel · Beräkna',
+        fnName: 'f',
+        varChar: 'x',
+        cVal: c,
+        aVal: a,
+        argVal: x,
+        formulaHtml,
+        subHtml,
+        rawVal: raw,
+        exactDecimals,
+        targetDecimals,
+        expectedVal,
+        expectedDisplay: `f(${x}) = ${fmtNum(expectedVal)}`,
+        prompt: `För funktionen ${mSpan(formulaHtml)}, beräkna ${mSpan(`f(${x})`)}.${roundPrompt}`,
+        errorHint: `Sätt in x = ${x} i exponenten: f(${x}) = ${fmtNum(c)} · ${fmtNum(a)}^${x} = ${fmtNum(expectedVal)}.`
+      };
+    }
+
+    function buildDynamicWriteFormulaTask() {
+      const contexts = [
+        {
+          dir: 'up',
+          cPool: [2500, 4000, 6000, 12000, 18000],
+          pctPool: [4, 5, 6, 8, 12],
+          makeText: (c, pct) => `Ett sparkonto öppnas med <strong>${fmtNum(c)} kr</strong> och kapitalet ökar med <strong>${pct} %</strong> per år. Skriv en formel för beloppet ${mSpan('f(x)')} kr efter ${mSpan('x')} år.`
+        },
+        {
+          dir: 'down',
+          cPool: [14000, 18000, 22000, 28000, 35000],
+          pctPool: [12, 15, 18, 20, 25],
+          makeText: (c, pct) => `En ny elcykel kostar <strong>${fmtNum(c)} kr</strong> och värdet minskar med <strong>${pct} %</strong> per år. Skriv en formel för värdet ${mSpan('f(x)')} kr efter ${mSpan('x')} år.`
+        },
+        {
+          dir: 'up',
+          cPool: [150, 250, 300, 450, 800],
+          pctPool: [15, 20, 25, 30, 35],
+          makeText: (c, pct) => `I en odling finns från början <strong>${fmtNum(c)} bakterier</strong> och antalet ökar med <strong>${pct} %</strong> per timme. Skriv en formel för antalet bakterier ${mSpan('f(x)')} efter ${mSpan('x')} timmar.`
+        },
+        {
+          dir: 'down',
+          cPool: [300, 400, 500, 600, 800],
+          pctPool: [10, 15, 20, 25],
+          makeText: (c, pct) => `En person tar <strong>${fmtNum(c)} mg</strong> av en medicin. Mängden aktivt ämne i kroppen minskar med <strong>${pct} %</strong> per timme. Skriv en formel för mängden ${mSpan('f(x)')} mg efter ${mSpan('x')} timmar.`
+        }
+      ];
+
+      let ctx, c, pct, a, sig, attempts = 0;
+      do {
+        attempts++;
+        ctx = randChoice(contexts);
+        c = randChoice(ctx.cPool);
+        pct = randChoice(ctx.pctPool);
+        a = ctx.dir === 'up'
+          ? Math.round((1 + pct / 100) * 1000) / 1000
+          : Math.round((1 - pct / 100) * 1000) / 1000;
+        sig = `write:${c}:${a}`;
+      } while (hasRecentSignature(sig) && attempts < 40);
+      rememberSignature(sig);
+
+      return {
+        rep: 'word',
+        mode: 'write_formula',
+        badge: 'Skriv formel',
+        fnName: 'f',
+        varChar: 'x',
+        lhsExpected: 'f(x)',
+        expectedC: c,
+        expectedA: a,
+        pct,
+        dir: ctx.dir,
+        expectedDisplay: formatExpFormulaPlain(c, a),
+        prompt: ctx.makeText(c, pct),
+        step1Q: `Vilket tal är startvärdet C (värdet när x = 0)?`,
+        step1Opts: shuffle([
+          { label: `${fmtNum(c)}`, correct: true },
+          { label: `${fmtNum(a)}`, correct: false },
+          { label: `${pct}`, correct: false }
+        ]),
+        step2Q: `Vilken förändringsfaktor (a) motsvarar en ${ctx.dir === 'up' ? 'ökning' : 'minskning'} med ${pct} %?`,
+        step2Opts: shuffle([
+          { label: `${fmtNum(a)}`, correct: true },
+          { label: `${fmtNum(pct / 100)}`, correct: false },
+          { label: `${pct}`, correct: false }
+        ]),
+        errorHint: `Använd f(x) = C · aˣ med startvärde C = ${fmtNum(c)} och förändringsfaktor a = ${fmtNum(a)}: ${formatExpFormulaPlain(c, a)}.`
+      };
+    }
+
+    // Dynamic positive & negative exponential graph reading (never repeats!)
+    function buildDynamicGraphReadTask() {
+      const configs = [
+        // Positive graphs (C > 0)
+        { c: 2, a: 1.5, x: 2, yMin: -2, yMax: 10 },   // y = 4.5
+        { c: 2, a: 1.5, x: 3, yMin: -2, yMax: 10 },   // y = 6.75 -> skip if not clean; let's use clean grid hits!
+        { c: 1, a: 2, x: 2, yMin: -2, yMax: 10 },     // y = 4
+        { c: 1, a: 2, x: 3, yMin: -2, yMax: 10 },     // y = 8
+        { c: 2, a: 2, x: 1, yMin: -2, yMax: 10 },     // y = 4
+        { c: 2, a: 2, x: 2, yMin: -2, yMax: 10 },     // y = 8
+        { c: 3, a: 2, x: 1, yMin: -2, yMax: 10 },     // y = 6
+        { c: 8, a: 0.5, x: 1, yMin: -2, yMax: 10 },   // y = 4
+        { c: 8, a: 0.5, x: 2, yMin: -2, yMax: 10 },   // y = 2
+        { c: 8, a: 0.5, x: 3, yMin: -2, yMax: 10 },   // y = 1
+        { c: 6, a: 0.5, x: 1, yMin: -2, yMax: 10 },   // y = 3
+        { c: 10, a: 0.5, x: 2, yMin: -2, yMax: 11 },  // y = 2.5
+
+        // Negative graphs (C < 0, curve lies below x-axis!)
+        { c: -1, a: 2, x: 2, yMin: -10, yMax: 2 },    // y = -4
+        { c: -1, a: 2, x: 3, yMin: -10, yMax: 2 },    // y = -8
+        { c: -2, a: 2, x: 1, yMin: -10, yMax: 2 },    // y = -4
+        { c: -2, a: 2, x: 2, yMin: -10, yMax: 2 },    // y = -8
+        { c: -3, a: 2, x: 1, yMin: -10, yMax: 2 },    // y = -6
+        { c: -8, a: 0.5, x: 1, yMin: -10, yMax: 2 },  // y = -4
+        { c: -8, a: 0.5, x: 2, yMin: -10, yMax: 2 },  // y = -2
+        { c: -8, a: 0.5, x: 3, yMin: -10, yMax: 2 },  // y = -1
+        { c: -6, a: 0.5, x: 1, yMin: -10, yMax: 2 }   // y = -3
+      ].filter(cfg => {
+        const y = cfg.c * Math.pow(cfg.a, cfg.x);
+        return Number.isInteger(y * 2); // lands on exact integer or .5 grid line
+      });
+
+      let cfg, sig, attempts = 0;
+      do {
+        attempts++;
+        cfg = randChoice(configs);
+        sig = `gread:${cfg.c}:${cfg.a}:${cfg.x}`;
+      } while (hasRecentSignature(sig) && attempts < 50);
+      rememberSignature(sig);
+
+      const yVal = Math.round(cfg.c * Math.pow(cfg.a, cfg.x) * 100) / 100;
+      const formulaHtml = formatExpFormulaHtml(cfg.c, cfg.a);
+
+      return {
+        rep: 'graph',
+        mode: 'graph_read',
+        badge: 'Graf · Avläs värde',
+        fnName: 'f',
+        varChar: 'x',
+        fn: (x) => cfg.c * Math.pow(cfg.a, x),
+        xMin: -2,
+        xMax: 4,
+        yMin: cfg.yMin,
+        yMax: cfg.yMax,
+        cVal: cfg.c,
+        aVal: cfg.a,
+        argVal: cfg.x,
+        rawVal: yVal,
+        exactDecimals: String(yVal).includes('.') ? 1 : 0,
+        targetDecimals: String(yVal).includes('.') ? 1 : 0,
+        expectedVal: yVal,
+        expectedDisplay: `f(${cfg.x}) = ${fmtNum(yVal)}`,
+        prompt: `Grafen visar ${mSpan(formulaHtml)}. Avläs ${mSpan(`f(${cfg.x})`)} ur grafen.`,
+        errorHint: `Gå till x = ${cfg.x} på x-axeln, följ rutmönstret ${yVal < 0 ? 'nedåt' : 'uppåt'} till kurvan och läs av y = ${fmtNum(yVal)}.`
+      };
+    }
+
+    function buildDynamicWordTwoPartTask() {
+      const scenarios = [
+        () => {
+          const c = randChoice([180000, 220000, 240000, 260000]);
+          const a = randChoice([0.82, 0.85, 0.88]);
+          const t1 = 3, t2 = 8;
+          const v1 = Math.round(c * Math.pow(a, t1));
+          const v2 = Math.round(c * Math.pow(a, t2));
+          return {
+            fnName: 'V', varChar: 't',
+            stem: `Värdet ${mSpan('V(t)')} kr på en bil som är ${mSpan('t')} år gammal beskrivs av ${mSpan(formatExpFormulaHtml(c, a, 'V', 't'))}.`,
+            partA: {
+              mode: 'direct_calc',
+              prompt: `a) Beräkna ${mSpan(`V(${t1})`)}. Avrunda till heltal.`,
+              argVal: t1, rawVal: c * Math.pow(a, t1), targetDecimals: 0, expectedVal: v1,
+              unitAliases: ['kr', 'kronor'], expectedDisplay: `V(${t1}) = ${fmtNum(v1)}`,
+              errorHint: `Sätt in t = ${t1}: V(${t1}) = ${fmtNum(c)} · ${fmtNum(a)}^${t1} ≈ ${fmtNum(v1)}.`,
+              interpretationOptions: shuffle([
+                { text: `Efter ${t1} år är bilen värd ungefär ${fmtNum(v1)} kr.`, correct: true },
+                { text: `Bilen minskar med ${fmtNum(v1)} kr varje år.`, correct: false },
+                { text: `Efter ${fmtNum(v1)} år är bilen värd ${t1} kr.`, correct: false }
+              ])
+            },
+            partB: {
+              mode: 'direct_calc',
+              prompt: `b) Beräkna ${mSpan(`V(${t2})`)}. Avrunda till heltal.`,
+              argVal: t2, rawVal: c * Math.pow(a, t2), targetDecimals: 0, expectedVal: v2,
+              unitAliases: ['kr', 'kronor'], expectedDisplay: `V(${t2}) = ${fmtNum(v2)}`,
+              errorHint: `Slå ${fmtNum(c)} · ${fmtNum(a)}^${t2} på miniräknaren ≈ ${fmtNum(v2)}.`,
+              interpretationOptions: shuffle([
+                { text: `När bilen är ${t2} år gammal är dess värde cirka ${fmtNum(v2)} kr.`, correct: true },
+                { text: `Bilen kostade ${fmtNum(v2)} kr när den var ny.`, correct: false },
+                { text: `Värdet minskar med ${fmtNum(v2)} % efter ${t2} år.`, correct: false }
+              ])
+            }
+          };
+        },
+        () => {
+          const c = randChoice([12000, 15000, 20000]);
+          const pct = randChoice([6, 7, 8]);
+          const a = 1 + pct / 100;
+          const x2 = 10;
+          const v2 = Math.round(c * Math.pow(a, x2));
+          return {
+            fnName: 'K', varChar: 'x',
+            stem: `Moa sätter in <strong>${fmtNum(c)} kr</strong> på ett fondkonto med en genomsnittlig värdeökning på <strong>${pct} %</strong> per år.`,
+            partA: {
+              mode: 'write_formula',
+              prompt: `a) Skriv en formel för kapitalet ${mSpan('K(x)')} kr efter ${mSpan('x')} år.`,
+              lhsExpected: 'K(x)', varChar: 'x', expectedC: c, expectedA: a,
+              expectedDisplay: formatExpFormulaPlain(c, a, 'K', 'x'),
+              errorHint: `Startvärdet C = ${fmtNum(c)} och ökningen ${pct} % ger FF a = ${fmtNum(a)}: ${formatExpFormulaPlain(c, a, 'K', 'x')}.`
+            },
+            partB: {
+              mode: 'direct_calc',
+              prompt: `b) Beräkna ${mSpan(`K(${x2})`)}. Avrunda till heltal.`,
+              argVal: x2, rawVal: c * Math.pow(a, x2), targetDecimals: 0, expectedVal: v2,
+              unitAliases: ['kr', 'kronor'], expectedDisplay: `K(${x2}) = ${fmtNum(v2)}`,
+              errorHint: `Sätt in x = ${x2}: K(${x2}) = ${fmtNum(c)} · ${fmtNum(a)}^${x2} ≈ ${fmtNum(v2)}.`,
+              interpretationOptions: shuffle([
+                { text: `Efter ${x2} år har kapitalet på fondkontot vuxit till cirka ${fmtNum(v2)} kr.`, correct: true },
+                { text: `Moa tjänar ${fmtNum(v2)} kr i ränta varje enskilt år.`, correct: false },
+                { text: `Efter ${fmtNum(v2)} år finns det ${x2} kr på kontot.`, correct: false }
+              ])
+            }
+          };
+        },
+        () => {
+          const c = randChoice([400, 600, 900]);
+          const a = randChoice([1.15, 1.2, 1.25]);
+          const t1 = 3, t2 = 10;
+          const v1 = Math.round(c * Math.pow(a, t1));
+          const v2 = Math.round(c * Math.pow(a, t2));
+          return {
+            fnName: 'B', varChar: 't',
+            stem: `Antalet bakterier ${mSpan('B(t)')} i en odling efter ${mSpan('t')} timmar ges av funktionen ${mSpan(formatExpFormulaHtml(c, a, 'B', 't'))}.`,
+            partA: {
+              mode: 'direct_calc',
+              prompt: `a) Beräkna ${mSpan(`B(${t1})`)}. Avrunda till heltal.`,
+              argVal: t1, rawVal: c * Math.pow(a, t1), targetDecimals: 0, expectedVal: v1,
+              unitAliases: ['st', 'bakterier'], expectedDisplay: `B(${t1}) = ${fmtNum(v1)}`,
+              errorHint: `Sätt in t = ${t1}: B(${t1}) = ${fmtNum(c)} · ${fmtNum(a)}^${t1} ≈ ${fmtNum(v1)}.`,
+              interpretationOptions: shuffle([
+                { text: `Efter ${t1} timmar finns det ungefär ${fmtNum(v1)} bakterier i odlingen.`, correct: true },
+                { text: `Det bildas ${fmtNum(v1)} nya bakterier per minut.`, correct: false },
+                { text: `Från början fanns det ${fmtNum(v1)} bakterier.`, correct: false }
+              ])
+            },
+            partB: {
+              mode: 'direct_calc',
+              prompt: `b) Beräkna ${mSpan(`B(${t2})`)}. Avrunda till heltal.`,
+              argVal: t2, rawVal: c * Math.pow(a, t2), targetDecimals: 0, expectedVal: v2,
+              unitAliases: ['st', 'bakterier'], expectedDisplay: `B(${t2}) = ${fmtNum(v2)}`,
+              errorHint: `Slå ${fmtNum(c)} · ${fmtNum(a)}^${t2} på miniräknaren ≈ ${fmtNum(v2)}.`,
+              interpretationOptions: shuffle([
+                { text: `Efter ${t2} timmar har antalet bakterier ökat till cirka ${fmtNum(v2)} st.`, correct: true },
+                { text: `Det tar ${fmtNum(v2)} timmar att få ${t2} bakterier.`, correct: false },
+                { text: `Bakterierna ökar med ${fmtNum(v2)} % på ${t2} timmar.`, correct: false }
+              ])
+            }
+          };
+        }
+      ];
+
+      const sc = randChoice(scenarios)();
+      state.subPart = 'a';
+      return {
+        rep: 'word',
+        wordSubtype: 'two_part',
+        badge: 'Textuppgift · a & b',
+        fnName: sc.fnName,
+        varChar: sc.varChar,
+        stem: sc.stem,
+        partA: { ...sc.partA, fnName: sc.fnName, varChar: sc.varChar },
+        partB: { ...sc.partB, fnName: sc.fnName, varChar: sc.varChar }
+      };
+    }
+
+    function buildPhase2Task() {
+      if (state.phase2TypeQueue.length === 0) {
+        state.phase2TypeQueue = shuffle([
+          'formula_calc', 'formula_calc', 'formula_calc',
+          'write_formula', 'write_formula',
+          'graph_read', 'graph_read',
+          'word_two_part'
+        ]);
+      }
+      const p2Type = state.phase2TypeQueue.pop();
+      if (p2Type === 'formula_calc') return buildDynamicFormulaCalcTask(true); // 2-step guided substitution + calculation!
+      if (p2Type === 'write_formula') return buildDynamicWriteFormulaTask();
+      if (p2Type === 'graph_read') return buildDynamicGraphReadTask();
+      return buildDynamicWordTwoPartTask();
+    }
+
+    // =========================================================
+    // 6. DYNAMIC GENERATORS FOR FAS 3 (DIREKT) & FAS 4 (GRAFER A-D)
+    // =========================================================
+    function buildDynamicSingleGraphMatchTask() {
+      const kind = randChoice(['exponential', 'linear', 'quadratic']);
+      let fn, xMin = -4, xMax = 4, yMin = -4, yMax = 9, eqs, sig;
+
+      if (kind === 'exponential') {
+        const isUp = Math.random() < 0.55;
+        const c = isUp ? randChoice([1, 2, 3]) : randChoice([6, 8]);
+        const a = isUp ? randChoice([1.5, 2]) : 0.5;
+        fn = (x) => c * Math.pow(a, x);
+        xMin = isUp ? -3 : -1;
+        xMax = isUp ? 4 : 5;
+        yMin = -2;
+        yMax = 10;
+        const altA = isUp ? 0.5 : 1.5;
+        eqs = shuffle([
+          { label: `f(x) = ${fmtNum(c)} · ${fmtNum(a)}<sup>x</sup>`, correct: true },
+          { label: `f(x) = ${fmtNum(a)}x + ${fmtNum(c)}`, correct: false },
+          { label: `f(x) = 0,5x<sup>2</sup> + ${fmtNum(c)}`, correct: false },
+          { label: `f(x) = ${fmtNum(c)} · ${fmtNum(altA)}<sup>x</sup>`, correct: false }
+        ]);
+        sig = `smatch:exp:${c}:${a}`;
+      } else if (kind === 'linear') {
+        const k = randChoice([-2, -1.5, 1.5, 2]);
+        const m = randChoice([-2, 1, 2, 4, 5]);
+        fn = (x) => k * x + m;
+        yMin = -5;
+        yMax = 9;
+        const mSign = m >= 0 ? `+ ${m}` : `− ${Math.abs(m)}`;
+        const oppK = -k;
+        eqs = shuffle([
+          { label: `f(x) = ${fmtNum(k)}x ${mSign}`, correct: true },
+          { label: `f(x) = ${Math.max(1, Math.abs(m))} · ${k > 0 ? '1,5' : '0,5'}<sup>x</sup>`, correct: false },
+          { label: `f(x) = ${k > 0 ? '' : '−'}x<sup>2</sup> ${mSign}`, correct: false },
+          { label: `f(x) = ${fmtNum(oppK)}x ${mSign}`, correct: false }
+        ]);
+        sig = `smatch:lin:${k}:${m}`;
+      } else {
+        const openUp = Math.random() < 0.55;
+        const aQuad = openUp ? randChoice([0.5, 1]) : -1;
+        const cQuad = openUp ? randChoice([-3, -2, 1]) : randChoice([4, 5, 6]);
+        fn = (x) => aQuad * x * x + cQuad;
+        yMin = -5;
+        yMax = 8;
+        const aPrefix = aQuad === 1 ? '' : (aQuad === -1 ? '−' : `${fmtNum(aQuad)}`);
+        const cSign = cQuad >= 0 ? `+ ${cQuad}` : `− ${Math.abs(cQuad)}`;
+        eqs = shuffle([
+          { label: `f(x) = ${aPrefix}x<sup>2</sup> ${cSign}`, correct: true },
+          { label: `f(x) = ${Math.max(1, Math.abs(cQuad))} · ${openUp ? '1,5' : '0,5'}<sup>x</sup>`, correct: false },
+          { label: `f(x) = ${openUp ? '2' : '−2'}x ${cSign}`, correct: false },
+          { label: `f(x) = ${openUp ? '−' : ''}x<sup>2</sup> ${cSign}`, correct: false }
+        ]);
+        sig = `smatch:quad:${aQuad}:${cQuad}`;
+      }
+
+      rememberSignature(sig);
+      return {
+        rep: 'challenge',
+        subtype: 'match_graph_both',
+        badge: 'Graf · Typ & Ekvation',
+        fn,
+        xMin, xMax, yMin, yMax,
+        correctType: kind,
+        equations: eqs
+      };
+    }
+
+    function buildDynamicGraphBuildExpTask() {
+      const choices = [
+        { c: 2, a: 2, xMin: -2, xMax: 4, yMin: -1, yMax: 10 },
+        { c: 3, a: 2, xMin: -2, xMax: 3, yMin: -1, yMax: 10 },
+        { c: 1, a: 3, xMin: -2, xMax: 3, yMin: -1, yMax: 10 },
+        { c: 8, a: 0.5, xMin: -1, xMax: 5, yMin: -1, yMax: 10 },
+        { c: 6, a: 0.5, xMin: -1, xMax: 5, yMin: -1, yMax: 10 }
+      ];
+      let tpl, sig, attempts = 0;
+      do {
+        attempts++;
+        tpl = randChoice(choices);
+        sig = `gbuild:${tpl.c}:${tpl.a}`;
+      } while (hasRecentSignature(sig) && attempts < 20);
+      rememberSignature(sig);
+
+      return {
+        rep: 'challenge',
+        subtype: 'graph_build_exp',
+        badge: 'Graf → Skriv formel',
+        fnName: 'f',
+        varChar: 'x',
+        fn: (x) => tpl.c * Math.pow(tpl.a, x),
+        xMin: tpl.xMin,
+        xMax: tpl.xMax,
+        yMin: tpl.yMin,
+        yMax: tpl.yMax,
+        expectedC: tpl.c,
+        expectedA: tpl.a,
+        expectedDisplay: formatExpFormulaPlain(tpl.c, tpl.a),
+        prompt: `Grafen visar en exponentialfunktion ${mSpan('f(x) = C · a<sup>x</sup>')}. Läs av punkterna vid ${mSpan('x = 0')} och ${mSpan('x = 1')} och skriv funktionens formel ${mSpan('f(x) = ...')}.`
+      };
+    }
+
+    function buildPhase3Task() {
+      if (state.phase3TypeQueue.length === 0) {
+        state.phase3TypeQueue = shuffle([
+          'direct_calc', 'direct_calc',
+          'write_formula', 'write_formula',
+          'match_graph_both', 'match_graph_both',
+          'graph_build_exp', 'word_two_part'
+        ]);
+      }
+      const p3Type = state.phase3TypeQueue.pop();
+      if (p3Type === 'direct_calc') return buildDynamicFormulaCalcTask(false); // Direct 1-step in Fas 3!
+      if (p3Type === 'write_formula') return buildDynamicWriteFormulaTask();
+      if (p3Type === 'match_graph_both') return buildDynamicSingleGraphMatchTask();
+      if (p3Type === 'graph_build_exp') return buildDynamicGraphBuildExpTask();
+      return buildDynamicWordTwoPartTask();
+    }
+
+    // 4-Graph Matching (A, B, C, D) for Fas 4
+    function buildFourGraphMatchTask() {
+      const pool = [
+        {
+          type: 'exponential',
+          fn: (x) => 1.5 * Math.pow(1.7, x),
+          xMin: -3, xMax: 4, yMin: -2, yMax: 9
+        },
+        {
+          type: 'exponential',
+          fn: (x) => 8 * Math.pow(0.55, x),
+          xMin: -1, xMax: 5, yMin: -2, yMax: 9
+        },
+        {
+          type: 'exponential',
+          fn: (x) => -1.5 * Math.pow(1.6, x),
+          xMin: -3, xMax: 4, yMin: -9, yMax: 2
+        },
+        {
+          type: 'linear',
+          fn: (x) => 1.5 * x + 2,
+          xMin: -4, xMax: 4, yMin: -5, yMax: 8
+        },
+        {
+          type: 'linear',
+          fn: (x) => -1.5 * x + 4,
+          xMin: -3, xMax: 5, yMin: -4, yMax: 8
+        },
+        {
+          type: 'quadratic',
+          fn: (x) => 0.7 * x * x - 3,
+          xMin: -4, xMax: 4, yMin: -4, yMax: 7
+        },
+        {
+          type: 'quadratic',
+          fn: (x) => -0.8 * x * x + 5,
+          xMin: -4, xMax: 4, yMin: -4, yMax: 7
+        }
+      ];
+
+      // Guarantee at least one exponential, one linear, and one quadratic among the 4 graphs
+      const expItem = randChoice(pool.filter(p => p.type === 'exponential'));
+      const linItem = randChoice(pool.filter(p => p.type === 'linear'));
+      const quadItem = randChoice(pool.filter(p => p.type === 'quadratic'));
+      const remaining = pool.filter(p => p !== expItem && p !== linItem && p !== quadItem);
+      const fourthItem = randChoice(remaining);
+
+      const ordered = shuffle([expItem, linItem, quadItem, fourthItem]);
+      const letters = ['A', 'B', 'C', 'D'];
+      const graphs = ordered.map((g, idx) => ({
+        letter: letters[idx],
+        ...g
+      }));
+
+      return {
+        rep: 'challenge',
+        subtype: 'match_four_graphs',
+        badge: 'Grafer A–D · Matcha funktionstyp',
+        graphs,
+        prompt: 'Para ihop var och en av graferna <strong>A, B, C och D</strong> med rätt funktionstyp.'
+      };
+    }
+
+    function buildCompareLinearExpTask() {
+      const c = randChoice([8000, 10000, 12000]);
+      const addYear = randChoice([700, 800, 900]);
+      const pct = randChoice([7, 8, 9]);
+      const a = 1 + pct / 100;
+      const x = 10;
+      const linVal = c + addYear * x;
+      const { raw } = analyzeExactValue(c, a, x);
+      const expVal = Math.round(raw);
+
+      return {
+        rep: 'challenge',
+        subtype: 'compare_lin_exp',
+        badge: 'Jämför linjär & exponentiell',
+        fnName: 'g',
+        varChar: 'x',
+        cVal: c,
+        aVal: a,
+        argVal: x,
+        rawVal: raw,
+        targetDecimals: 0,
+        expectedVal: expVal,
+        unitAliases: ['kr', 'kronor'],
+        expectedDisplay: `g(${x}) = ${fmtNum(expVal)}`,
+        prompt: `Två sparformer jämförs med startkapital ${fmtNum(c)} kr:<br>• Linjärt sparande: ${mSpan(`f(x) = ${fmtNum(c)} + ${fmtNum(addYear)}x`)} (ger ${mSpan(`f(${x}) = ${fmtNum(linVal)}`)} kr).<br>• Exponentiellt sparande (+${pct} %/år): ${mSpan(formatExpFormulaHtml(c, a, 'g', 'x'))}.<br>Beräkna ${mSpan(`g(${x})`)} (avrunda till heltal).`
+      };
+    }
+
+    function buildPhase4Task() {
+      if (state.phase4TypeQueue.length === 0) {
+        state.phase4TypeQueue = shuffle([
+          'match_four_graphs', 'match_four_graphs', 'match_four_graphs', 'match_four_graphs',
+          'compare_lin_exp', 'compare_lin_exp'
+        ]);
+      }
+      const p4Type = state.phase4TypeQueue.pop();
+      if (p4Type === 'match_four_graphs') return buildFourGraphMatchTask();
+      return buildCompareLinearExpTask();
+    }
+
+    function generateNewTask() {
+      const p = state.currentPhase;
+      state.editorHtml = '';
+      state.isSuperscriptMode = false;
+      state.phase1Answered = false;
+      state.phase1Correct = false;
+      state.phase1Choice = null;
+      state.calcStep = 1;
+      state.substitutedLineHtml = '';
+      state.showOptionalScaffold = false;
+      state.scaffoldStep1Done = false;
+      state.scaffoldStep2Done = false;
+      state.subPart = null;
+      state.partADone = false;
+      state.awaitingInterpretation = false;
+      state.interpretationDone = false;
+      state.interpretationSelectedIdx = null;
+      state.selectedFuncType = null;
+      state.selectedEqIdx = null;
+      state.abcdSelections = { A: '', B: '', C: '', D: '' };
+      state.taskSolved = false;
+      state.feedback = null;
+      state.guideX = 2;
+      state.guideY = 2;
+
+      if (p === 1) {
+        state.task = buildPhase1Task();
+        state.guideXVisible = false;
+        state.guideYVisible = false;
+      } else if (p === 2) {
+        state.task = buildPhase2Task();
+        state.guideXVisible = (state.task.rep === 'graph');
+        state.guideYVisible = (state.task.rep === 'graph');
+      } else if (p === 3) {
+        state.task = buildPhase3Task();
+        state.guideXVisible = false;
+        state.guideYVisible = false;
+      } else if (p === 4) {
+        state.task = buildPhase4Task();
+        state.guideXVisible = false;
+        state.guideYVisible = false;
+      }
+    }
+
+    function getActiveSubTask(t) {
+      if (t && t.rep === 'word' && t.wordSubtype === 'two_part') {
+        return state.subPart === 'b' ? t.partB : t.partA;
+      }
+      return t;
+    }
+
+    // =========================================================
+    // 7. PHASE NAVIGATION & TEACHER SHORTCUTS
+    // =========================================================
+    function switchPhase(phaseId) {
+      if (!state.unlockedPhases[phaseId]) return;
+      state.currentPhase = phaseId;
+      generateNewTask();
+      renderAll();
+    }
+
+    function recordSuccessAndAdvanceProgress() {
+      if (state.taskSolved) return;
+      state.taskSolved = true;
+      const p = state.currentPhase;
+      const target = PHASES[p - 1].target;
+      if (state.progress[p] < target) {
+        state.progress[p] += 1;
+      }
+      if (state.progress[p] >= target && p < 4) {
+        state.unlockedPhases[p + 1] = true;
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.shiftKey && (e.key === 'L' || e.key === 'l')) {
+        e.preventDefault();
+        state.unlockedPhases = { 1: true, 2: true, 3: true, 4: true };
+        renderTabs();
+        return;
+      }
+      if (e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+        e.preventDefault();
+        generateNewTask();
+        renderAll();
+        return;
+      }
+
+      const activeTag = document.activeElement?.tagName;
+      const isEditing = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable;
+
+      if (state.currentPhase === 1 && !isEditing) {
+        if (!state.phase1Answered) {
+          if (e.key === '1' || e.key === 'a' || e.key === 'A') {
+            e.preventDefault();
+            handlePhase1Choice('A');
+          } else if (e.key === '2' || e.key === 'b' || e.key === 'B') {
+            e.preventDefault();
+            handlePhase1Choice('B');
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          generateNewTask();
+          renderAll();
+        }
+      }
+    });
+
+    // =========================================================
+    // 8. PHASE 1, OPTIONAL SCAFFOLD & INTERPRETATION HANDLERS
+    // =========================================================
+    function handlePhase1Choice(choice) {
+      if (state.phase1Answered) return;
+      state.phase1Answered = true;
+      state.phase1Choice = choice;
+      const isRight = choice === state.task.correctChoice;
+      state.phase1Correct = isRight;
+
+      if (isRight) {
+        recordSuccessAndAdvanceProgress();
+        state.feedback = {
+          type: 'success',
+          title: 'Rätt!',
+          detail: state.task.explanation
+        };
+      } else {
+        state.feedback = {
+          type: 'error',
+          title: 'Inte riktigt.',
+          detail: state.task.explanation
+        };
+      }
+      renderAll();
+    }
+
+    function openOptionalScaffold() {
+      state.showOptionalScaffold = true;
+      state.scaffoldStep1Done = false;
+      state.scaffoldStep2Done = false;
+      state.feedback = null;
+      renderWorkspace();
+    }
+
+    function handleScaffoldStep1(isCorrect) {
+      if (isCorrect) {
+        state.scaffoldStep1Done = true;
+        state.feedback = null;
+      } else {
+        state.feedback = {
+          type: 'error',
+          title: 'Försök igen i steg 1',
+          detail: 'Titta i texten efter vilket värde som finns från början (när x = 0).'
+        };
+      }
+      renderWorkspace();
+    }
+
+    function handleScaffoldStep2(isCorrect) {
+      if (isCorrect) {
+        state.scaffoldStep2Done = true;
+        state.feedback = null;
+        renderWorkspace();
+        setTimeout(() => document.getElementById('mathEditor')?.focus(), 25);
+      } else {
+        state.feedback = {
+          type: 'error',
+          title: 'Försök igen i steg 2',
+          detail: 'Ökning med p % ger a = 1 + p/100 och minskning med p % ger a = 1 − p/100.'
+        };
+        renderWorkspace();
+      }
+    }
+
+    function advanceFromPartAToPartB(successTitle, successDetail) {
+      state.partADone = true;
+      state.subPart = 'b';
+      state.editorHtml = '';
+      state.isSuperscriptMode = false;
+      state.calcStep = 1;
+      state.substitutedLineHtml = '';
+      state.showOptionalScaffold = false;
+      state.awaitingInterpretation = false;
+      state.interpretationDone = false;
+      state.interpretationSelectedIdx = null;
+      state.feedback = {
+        type: 'success',
+        title: successTitle,
+        detail: successDetail
+      };
+      renderWorkspace();
+      setTimeout(() => document.getElementById('mathEditor')?.focus(), 25);
+    }
+
+    function handleInterpretationChoice(idx) {
+      if (state.interpretationDone || state.taskSolved) return;
+      const t = state.task;
+      const sub = getActiveSubTask(t);
+      const opt = sub.interpretationOptions[idx];
+      state.interpretationSelectedIdx = idx;
+
+      if (opt && opt.correct) {
+        state.interpretationDone = true;
+        state.awaitingInterpretation = false;
+
+        if (state.subPart === 'a') {
+          advanceFromPartAToPartB(
+            'Rätt tolkat på a)!',
+            'Nu är deluppgift b) upplåst nedan.'
+          );
+          return;
+        }
+
+        recordSuccessAndAdvanceProgress();
+        state.feedback = {
+          type: 'success',
+          title: 'Helt rätt tolkat!',
+          detail: 'Snyggt! Både uträkningen och tolkningen i textuppgiften är klara.'
+        };
+        renderAll();
+      } else {
+        const vName = sub.varChar || 'x';
+        const fName = sub.fnName || 'f';
+        state.feedback = {
+          type: 'error',
+          title: `Inte riktigt — kontrollera vad ${vName} och ${fName}(${vName}) står för!`,
+          detail: sub.errorHint || `Tänk på vad ${vName} anger och vad funktionsvärdet ${fName}(${vName}) anger.`
+        };
+        renderWorkspace();
+      }
+    }
+
+    // =========================================================
+    // 9. SMART ERROR DIAGNOSIS & VALIDATION (PHASE 2 & PHASE 3)
+    // =========================================================
+    function diagnoseNumericMistake(parsed, sub) {
+      const fnDisp = sub.fnName || 'f';
+      const arg = sub.argVal;
+      const exp = sub.expectedVal;
+      const raw = sub.rawVal;
+      const targetDec = sub.targetDecimals ?? 0;
+
+      // 1. Check for rounding error first! (Value is close to raw/expected, e.g. within ±1.5, or exact unrounded value entered)
+      const diffFromRaw = Math.abs(parsed.num - raw);
+      const diffFromExp = Math.abs(parsed.num - exp);
+      const isCloseValue = diffFromRaw <= Math.max(1.5, Math.abs(raw) * 0.015) ||
+                           diffFromExp <= Math.max(1.5, Math.abs(exp) * 0.015);
+
+      if (isCloseValue && Math.abs(parsed.num - exp) > 1e-6) {
+        const decRequirement = targetDec === 0
+          ? 'ett heltal (inga decimaler)'
+          : 'en decimal';
+        return {
+          type: 'warn',
+          title: 'Rätt uträknat, men läs frågan igen och kontrollera avrundningen!',
+          detail: `Svaret ska avrundas till ${decRequirement}. Öppna positionssystemet om du vill se hur avrundningen fungerar.`,
+          showPositionBtn: true
+        };
+      }
+
+      // 2. Check if student calculated (C * a)^x instead of C * a^x
+      if (sub.cVal && sub.aVal) {
+        const wrongParen = Math.pow(sub.cVal * sub.aVal, arg);
+        if (Math.abs(parsed.num - wrongParen) <= Math.max(1, Math.abs(wrongParen) * 0.02)) {
+          return {
+            type: 'error',
+            title: 'Se upp med räkneordningen!',
+            detail: `Endast förändringsfaktorn ${fmtNum(sub.aVal)} ska höjas upp till ${arg}, inte startvärdet ${fmtNum(sub.cVal)}. Räkna ${fmtNum(sub.aVal)}^${arg} först och multiplicera sedan med ${fmtNum(sub.cVal)}.`
+          };
+        }
+
+        // 3. Check if student multiplied C * a * x instead of C * a^x
+        const wrongLinear = sub.cVal * sub.aVal * arg;
+        if (Math.abs(parsed.num - wrongLinear) <= Math.max(1, Math.abs(wrongLinear) * 0.02)) {
+          return {
+            type: 'error',
+            title: 'Du multiplicerade med x i stället för upphöjt till x!',
+            detail: `Det står ${fmtNum(sub.aVal)}^${arg} (potens), inte ${fmtNum(sub.aVal)} · ${arg}. Använd xʸ-knappen på miniräknaren.`
+          };
+        }
+      }
+
+      return {
+        type: 'error',
+        title: 'Inte riktigt rätt värde.',
+        detail: sub.errorHint || `Kontrollera uträkningen för ${fnDisp}(${arg}).`
+      };
+    }
+
+    function evaluateCalculationAnswer(normLower, sub) {
+      const fnLower = (sub.fnName || 'f').toLowerCase();
+      const varLower = (sub.varChar || 'x').toLowerCase();
+      const parsed = parseNumericAnswer(normLower, fnLower, varLower, sub.argVal, sub.unitAliases || []);
+
+      if (!parsed) {
+        state.feedback = {
+          type: 'warn',
+          title: 'Kontrollera formatet',
+          detail: `Skriv svaret som ${sub.fnName || 'f'}(${sub.argVal}) = ${fmtNum(sub.expectedVal)}.`
+        };
+        return false;
+      }
+
+      const tol = sub.targetDecimals === 1 ? 0.051 : 0.51;
+      const isExactOrProperlyRounded = Math.abs(parsed.num - sub.expectedVal) < 1e-5 ||
+                                       (sub.exactDecimals === 0 && Math.abs(parsed.num - sub.rawVal) < 1e-5);
+
+      // Also verify decimal count if rounding was required
+      const hasTooManyDecimals = sub.targetDecimals === 0 && parsed.decCount > 0 && Math.abs(parsed.num - sub.rawVal) < 1;
+
+      if (isExactOrProperlyRounded && !hasTooManyDecimals) {
+        if (!parsed.hadPrefix && !parsed.hadUnit) {
+          state.feedback = {
+            type: 'warn',
+            title: 'Rätt värde — lägg till beteckning!',
+            detail: `Skriv hela svaret som ${sub.fnName || 'f'}(${sub.argVal}) = ${fmtNum(sub.expectedVal)}.`
+          };
+          return false;
+        }
+        return true;
+      }
+
+      state.feedback = diagnoseNumericMistake(parsed, sub);
+      return false;
+    }
+
+    function evaluateFormulaWriteAnswer(normStr, sub) {
+      const fnLower = (sub.fnName || 'f').toLowerCase();
+      const varLower = (sub.varChar || 'x').toLowerCase();
+      const expectedLhsLower = `${fnLower}(${varLower})`;
+      const parts = normStr.split('=');
+      const lhsLow = parts[0] ? parts[0].toLowerCase() : '';
+
+      if (parts.length !== 2 || (lhsLow !== expectedLhsLower && lhsLow !== 'y')) {
+        const rhsOnly = evaluateExponentialRhsVar(normStr, sub.varChar || 'x', sub.expectedC, sub.expectedA);
+        if (rhsOnly.valid) {
+          state.feedback = {
+            type: 'warn',
+            title: 'Rätt uttryck, men ta med vänsterledet!',
+            detail: `Skriv hela formeln som ${sub.expectedDisplay}.`
+          };
+          return false;
+        }
+        state.feedback = {
+          type: 'warn',
+          title: 'Kontrollera vänsterledet',
+          detail: `Börja formeln med ${sub.lhsExpected || 'f(x)'} = ...`
+        };
+        return false;
+      }
+
+      const rhsEval = evaluateExponentialRhsVar(parts[1], sub.varChar || 'x', sub.expectedC, sub.expectedA);
+      if (rhsEval.valid) {
+        return true;
+      }
+
+      if (rhsEval.reason === 'linear_instead_of_exp') {
+        state.feedback = {
+          type: 'warn',
+          title: 'Det ser ut som en linjär formel!',
+          detail: `Vid upprepad procentuell förändring multiplicerar vi med förändringsfaktorn och sätter ${sub.varChar || 'x'} i exponenten (tryck på ^-knappen).`,
+          showScaffoldBtn: Boolean(sub.step1Opts)
+        };
+        return false;
+      }
+
+      if (rhsEval.reason === 'percent_not_ff') {
+        state.feedback = {
+          type: 'warn',
+          title: 'Omvandla procenten till förändringsfaktor (FF)!',
+          detail: sub.dir === 'down'
+            ? `Vid minskning med ${sub.pct} % återstår 100 % − ${sub.pct} % = ${100 - sub.pct} %, vilket ger förändringsfaktorn a = ${fmtNum(sub.expectedA)}.`
+            : `Vid ökning med ${sub.pct} % blir andelen 100 % + ${sub.pct} % = ${100 + sub.pct} %, vilket ger förändringsfaktorn a = ${fmtNum(sub.expectedA)}.`,
+          showScaffoldBtn: Boolean(sub.step1Opts)
+        };
+        return false;
+      }
+
+      if (rhsEval.reason === 'swapped_c_a') {
+        state.feedback = {
+          type: 'warn',
+          title: 'Startvärdet C och förändringsfaktorn a har bytt plats!',
+          detail: `Startvärdet ${fmtNum(sub.expectedC)} ska stå först, och förändringsfaktorn ${fmtNum(sub.expectedA)} ska höjas upp till x: f(x) = ${fmtNum(sub.expectedC)} · ${fmtNum(sub.expectedA)}ˣ.`
+        };
+        return false;
+      }
+
+      state.feedback = {
+        type: 'error',
+        title: 'Inte riktigt rätt formel.',
+        detail: sub.errorHint,
+        showScaffoldBtn: Boolean(sub.step1Opts) && !state.showOptionalScaffold
+      };
+      return false;
+    }
+
+    function checkPhase2Answer() {
+      syncEditorStateFromDom();
+      const norm = getEditorNormalizedString();
+      const normLower = norm.toLowerCase();
+
+      if (!norm) {
+        state.feedback = { type: 'warn', title: 'Skriv ett svar först.', detail: 'Fyll i rutan innan du kontrollerar.' };
+        renderWorkspace();
+        return;
+      }
+
+      const t = state.task;
+      const sub = getActiveSubTask(t);
+
+      // 1. Two-step Formel · Beräkna in Fas 2
+      if (sub.mode === 'guided_two_step_calc') {
+        if (state.calcStep === 1) {
+          const checkSub = validateSubstitutionExpression(norm, sub.fnName, sub.argVal, sub.cVal, sub.aVal);
+          if (checkSub.valid) {
+            state.calcStep = 2;
+            state.substitutedLineHtml = sub.subHtml;
+            state.editorHtml = '';
+            state.isSuperscriptMode = false;
+            state.feedback = {
+              type: 'success',
+              title: 'Rätt insättning!',
+              detail: 'Nu ser du uträkningen i rutan ovan. Räkna ut värdet med miniräknaren i steg 2.'
+            };
+            renderWorkspace();
+            setTimeout(() => document.getElementById('mathEditor')?.focus(), 25);
+            return;
+          }
+
+          if (checkSub.reason === 'bad_lhs') {
+            state.feedback = {
+              type: 'warn',
+              title: 'Börja med funktionsnoteringen!',
+              detail: `Byt ut x mot ${sub.argVal} även i vänsterledet så att det börjar med f(${sub.argVal}) = ...`
+            };
+          } else if (checkSub.reason === 'no_power') {
+            state.feedback = {
+              type: 'warn',
+              title: 'Glöm inte exponenten!',
+              detail: `Sätt ${sub.argVal} som exponent (tryck på ^-knappen): f(${sub.argVal}) = ${fmtNum(sub.cVal)} · ${fmtNum(sub.aVal)}^${sub.argVal}.`
+            };
+          } else {
+            state.feedback = {
+              type: 'error',
+              title: 'Kontrollera insättningen',
+              detail: `Byt ut x mot ${sub.argVal} i formeln: f(${sub.argVal}) = ${fmtNum(sub.cVal)} · ${fmtNum(sub.aVal)}^${sub.argVal}.`
+            };
+          }
+          renderWorkspace();
+          return;
+        } else {
+          // Step 2: calculate numerical value
+          const ok = evaluateCalculationAnswer(normLower, sub);
+          if (ok) {
+            recordSuccessAndAdvanceProgress();
+            state.feedback = {
+              type: 'success',
+              title: `Helt rätt! ${sub.expectedDisplay}`,
+              detail: 'Snyggt uppställt och beräknat!'
+            };
+            renderAll();
+            return;
+          }
+          renderWorkspace();
+          return;
+        }
+      }
+
+      // 2. Writing exponential formula
+      if (sub.mode === 'write_formula') {
+        const ok = evaluateFormulaWriteAnswer(norm, sub);
+        if (ok) {
+          if (t.rep === 'word' && state.subPart === 'a') {
+            advanceFromPartAToPartB(
+              `Rätt på a)! (${sub.expectedDisplay})`,
+              'Använd nu din formel och miniräknaren för att lösa deluppgift b) nedan.'
+            );
+            return;
+          }
+          recordSuccessAndAdvanceProgress();
+          state.feedback = {
+            type: 'success',
+            title: `Helt rätt! ${sub.expectedDisplay}`,
+            detail: 'Snyggt uppställt!'
+          };
+          renderAll();
+          return;
+        }
+        renderWorkspace();
+        return;
+      }
+
+      // 3. Graph read or Word Part calculation
+      const ok = evaluateCalculationAnswer(normLower, sub);
+      if (ok) {
+        if (t.rep === 'word' && sub.interpretationOptions && !state.interpretationDone) {
+          state.awaitingInterpretation = true;
+          state.feedback = {
+            type: 'success',
+            title: 'Rätt beräknat!',
+            detail: 'Välj nu vilken mening nedan som bäst förklarar vad svaret betyder.'
+          };
+          renderWorkspace();
+          return;
+        }
+
+        if (t.rep === 'word' && state.subPart === 'a') {
+          advanceFromPartAToPartB(
+            `Rätt på a)! (${sub.expectedDisplay})`,
+            'Fortsätt med deluppgift b) nedan.'
+          );
+          return;
+        }
+
+        recordSuccessAndAdvanceProgress();
+        state.feedback = {
+          type: 'success',
+          title: `Helt rätt! ${sub.expectedDisplay}`,
+          detail: 'Snyggt!'
+        };
+        renderAll();
+        return;
+      }
+      renderWorkspace();
+    }
+
+    function checkPhase3Answer() {
+      const t = state.task;
+
+      // 1. Single-graph dual matching (Name + Equation)
+      if (t.subtype === 'match_graph_both') {
+        if (!state.selectedFuncType || state.selectedEqIdx === null) {
+          state.feedback = {
+            type: 'warn',
+            title: 'Välj både funktionstyp och ekvation.',
+            detail: 'Markera ett alternativ under steg 1 och ett alternativ under steg 2.'
+          };
+          renderWorkspace();
+          return;
+        }
+
+        const typeCorrect = state.selectedFuncType === t.correctType;
+        const eqCorrect = Boolean(t.equations[state.selectedEqIdx]?.correct);
+
+        if (typeCorrect && eqCorrect) {
+          state.graphMatchSolvedCount += 1;
+          recordSuccessAndAdvanceProgress();
+          const typeNames = {
+            linear: 'Linjär funktion',
+            exponential: 'Exponentialfunktion',
+            quadratic: 'Andragradsfunktion (parabel)'
+          };
+          state.feedback = {
+            type: 'success',
+            title: `Helt rätt! ${typeNames[t.correctType]}`,
+            detail: 'Både funktionens namn och ekvation stämmer med grafen.'
+          };
+          renderAll();
+          return;
+        }
+
+        if (typeCorrect && !eqCorrect) {
+          state.feedback = {
+            type: 'error',
+            title: 'Rätt funktionstyp, men fel ekvation!',
+            detail: 'Kontrollera var grafen skär y-axeln (x = 0) och om den stiger eller sjunker.'
+          };
+        } else if (!typeCorrect && eqCorrect) {
+          state.feedback = {
+            type: 'error',
+            title: 'Rätt ekvation, men fel funktionstyp!',
+            detail: 'Titta på ekvationens form: kx + m är linjär, C · aˣ är exponentialfunktion och x² ger en andragradsfunktion.'
+          };
+        } else {
+          state.feedback = {
+            type: 'error',
+            title: 'Inte riktigt rätt.',
+            detail: 'Rät linje = linjär funktion, böjd kurva uppåt/nedåt = exponentialfunktion, U- eller ∩-formad symmetrisk kurva = andragradsfunktion.'
+          };
+        }
+        renderWorkspace();
+        return;
+      }
+
+      // 2. Graph -> Write exponential formula
+      if (t.subtype === 'graph_build_exp') {
+        syncEditorStateFromDom();
+        const norm = getEditorNormalizedString();
+        if (!norm) {
+          state.feedback = { type: 'warn', title: 'Skriv ett svar först.', detail: 'Fyll i rutan innan du kontrollerar.' };
+          renderWorkspace();
+          return;
+        }
+        const ok = evaluateFormulaWriteAnswer(norm, {
+          fnName: 'f',
+          varChar: 'x',
+          lhsExpected: 'f(x)',
+          expectedC: t.expectedC,
+          expectedA: t.expectedA,
+          errorHint: `Läs av y-värdet vid x = 0 (C = ${fmtNum(t.expectedC)}) och se hur många gånger y multipliceras då x ökar med 1 (a = ${fmtNum(t.expectedA)}).`
+        });
+        if (ok) {
+          recordSuccessAndAdvanceProgress();
+          state.feedback = {
+            type: 'success',
+            title: `Helt rätt! ${t.expectedDisplay}`,
+            detail: 'Snyggt avläst från grafen!'
+          };
+          renderAll();
+          return;
+        }
+        renderWorkspace();
+        return;
+      }
+
+      // 3. Direct calculation, formula writing, or 2-part word problem in Fas 3
+      checkPhase2Answer();
+    }
+
+    function checkPhase4Answer() {
+      const t = state.task;
+
+      if (t.subtype === 'match_four_graphs') {
+        const letters = ['A', 'B', 'C', 'D'];
+        if (letters.some(L => !state.abcdSelections[L])) {
+          state.feedback = {
+            type: 'warn',
+            title: 'Välj funktionstyp för alla fyra grafer (A–D).',
+            detail: 'Fyll i alla fyra rullgardinsmenyerna innan du kontrollerar.'
+          };
+          renderWorkspace();
+          return;
+        }
+
+        const wrongLetters = t.graphs
+          .filter(g => state.abcdSelections[g.letter] !== g.type)
+          .map(g => g.letter);
+
+        if (wrongLetters.length === 0) {
+          recordSuccessAndAdvanceProgress();
+          state.feedback = {
+            type: 'success',
+            title: 'Alla fyra grafer (A–D) är rätt matchade!',
+            detail: 'Du skiljer säkert på linjära, exponentiella och kvadratiska grafer.'
+          };
+          renderAll();
+          return;
+        }
+
+        state.feedback = {
+          type: 'error',
+          title: `Kontrollera graf ${wrongLetters.join(', ')}`,
+          detail: 'Tips: Rät linje = linjär funktion, U- eller ∩-formad symmetrisk kurva = andragradsfunktion, böjd kurva som flackar ut åt ena hållet = exponentialfunktion.'
+        };
+        renderWorkspace();
+        return;
+      }
+
+      // Compare linear vs exponential
+      syncEditorStateFromDom();
+      const normLower = getEditorNormalizedString().toLowerCase();
+      if (!normLower) {
+        state.feedback = { type: 'warn', title: 'Skriv ett svar först.', detail: 'Fyll i rutan innan du kontrollerar.' };
+        renderWorkspace();
+        return;
+      }
+      const ok = evaluateCalculationAnswer(normLower, t);
+      if (ok) {
+        recordSuccessAndAdvanceProgress();
+        state.feedback = {
+          type: 'success',
+          title: `Helt rätt! ${t.expectedDisplay} kr`,
+          detail: 'Det exponentiella sparandet växer snabbare och ger mer än det linjära efter 10 år.'
+        };
+        renderAll();
+        return;
+      }
+      renderWorkspace();
+    }
+
+    // =========================================================
+    // 10. SVG COORDINATE GRAPHS (NON-OVERLAPPING SLIDER PILLS!)
+    // =========================================================
+    function renderCoordinateGraph(task, compactSize = false) {
+      // Generous outer margins so draggable slider pills sit completely outside the axis tick numbers!
+      const w = compactSize ? 250 : 380;
+      const h = compactSize ? 235 : 375;
+      const padLeft = compactSize ? 32 : 52;
+      const padRight = compactSize ? 16 : 24;
+      const padTop = compactSize ? 16 : 24;
+      const padBottom = compactSize ? 26 : 52;
+
+      const xMin = task.xMin ?? -4;
+      const xMax = task.xMax ?? 5;
+      const yMin = task.yMin ?? -2;
+      const yMax = task.yMax ?? 10;
+      const xSpan = xMax - xMin;
+      const ySpan = yMax - yMin;
+      const plotW = w - padLeft - padRight;
+      const plotH = h - padTop - padBottom;
+      const stepX = plotW / xSpan;
+      const stepY = plotH / ySpan;
+
+      const toPxX = (x) => padLeft + (x - xMin) * stepX;
+      const toPxY = (y) => padTop + (yMax - y) * stepY;
+
+      let gridLines = '';
+      let axisLabels = '';
+
+      const axisY0 = Math.max(yMin, Math.min(yMax, 0));
+      const axisX0 = Math.max(xMin, Math.min(xMax, 0));
+      const ox = toPxX(axisX0);
+      const oy = toPxY(axisY0);
+
+      for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+        const px = toPxX(x);
+        const isAxis = x === 0;
+        gridLines += `<line x1="${px}" y1="${padTop}" x2="${px}" y2="${h - padBottom}" stroke="${isAxis ? 'var(--grid-axis)' : 'var(--grid-major)'}" stroke-width="${isAxis ? 1.8 : 1}" />`;
+        if (x !== 0 && x < xMax) {
+          const labelY = axisY0 === yMax ? (oy + 13) : (oy + 14);
+          axisLabels += `<text x="${px}" y="${labelY}" text-anchor="middle" font-size="${compactSize ? 9 : 10}" fill="var(--grid-text)" class="mono">${fmtNum(x)}</text>`;
+        }
+      }
+
+      const yStepLabel = ySpan > 11 ? 2 : 1;
+      for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+        const py = toPxY(y);
+        const isAxis = y === 0;
+        gridLines += `<line x1="${padLeft}" y1="${py}" x2="${w - padRight}" y2="${py}" stroke="${isAxis ? 'var(--grid-axis)' : 'var(--grid-major)'}" stroke-width="${isAxis ? 1.8 : 1}" />`;
+        if (y !== 0 && y < yMax && Math.abs(y) % yStepLabel === 0) {
+          axisLabels += `<text x="${ox - 7}" y="${py + 3.5}" text-anchor="end" font-size="${compactSize ? 9 : 10}" fill="var(--grid-text)" class="mono">${fmtNum(y)}</text>`;
+        }
+      }
+
+      const axisExtras = `
+        <polygon points="${w - padRight + 5},${oy} ${w - padRight - 2},${oy - 3.5} ${w - padRight - 2},${oy + 3.5}" fill="var(--grid-axis)" />
+        <polygon points="${ox},${padTop - 5} ${ox - 3.5},${padTop + 2} ${ox + 3.5},${padTop + 2}" fill="var(--grid-axis)" />
+        <text x="${w - padRight + 8}" y="${oy + 4}" font-size="${compactSize ? 10 : 12}" font-weight="700" fill="var(--grid-text)" class="mono">x</text>
+        <text x="${ox + 7}" y="${padTop - 4}" font-size="${compactSize ? 10 : 12}" font-weight="700" fill="var(--grid-text)" class="mono">y</text>
+      `;
+
+      function buildPolyline(fn) {
+        const pts = [];
+        const samples = 260;
+        for (let i = 0; i <= samples; i++) {
+          const x = xMin + (xSpan * i) / samples;
+          const y = fn(x);
+          if (Number.isFinite(y) && y >= yMin && y <= yMax) {
+            pts.push(`${toPxX(x).toFixed(1)},${toPxY(y).toFixed(1)}`);
+          } else if (pts.length > 0) {
+            pts.push('BREAK');
+          }
+        }
+        const segments = [];
+        let cur = [];
+        for (const p of pts) {
+          if (p === 'BREAK') {
+            if (cur.length > 1) segments.push(cur.join(' '));
+            cur = [];
+          } else {
+            cur.push(p);
+          }
+        }
+        if (cur.length > 1) segments.push(cur.join(' '));
+        return segments;
+      }
+
+      let curvesSvg = '';
+      buildPolyline(task.fn).forEach(seg => {
+        curvesSvg += `<polyline points="${seg}" fill="none" stroke="var(--curve-f)" stroke-width="${compactSize ? 2.5 : 2.8}" stroke-linecap="round" stroke-linejoin="round" />`;
+      });
+
+      // Draggable slider pills placed in dedicated outer tracks (y = h - 22 and x = 4..24) so they NEVER cover axis numbers!
+      let guidesSvg = '';
+      if (!compactSize && state.guideXVisible) {
+        const clampedX = Math.max(xMin, Math.min(xMax, state.guideX));
+        const gxPx = toPxX(clampedX);
+        const pillY = h - 22;
+        guidesSvg += `
+          <g class="guide-handle" onpointerdown="startDragGuide(event, 'x')">
+            <line x1="${gxPx}" y1="${padTop}" x2="${gxPx}" y2="${pillY}" stroke="var(--guide-line)" stroke-width="2" stroke-dasharray="5,4" />
+            <rect x="${gxPx - 14}" y="${pillY}" width="28" height="17" rx="8.5" fill="var(--guide-pill)" />
+            <line x1="${gxPx - 3}" y1="${pillY + 4.5}" x2="${gxPx - 3}" y2="${pillY + 12.5}" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="${gxPx + 3}" y1="${pillY + 4.5}" x2="${gxPx + 3}" y2="${pillY + 12.5}" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+          </g>
+        `;
+      }
+      if (!compactSize && state.guideYVisible) {
+        const clampedY = Math.max(yMin, Math.min(yMax, state.guideY));
+        const gyPx = toPxY(clampedY);
+        const pillX = 4;
+        guidesSvg += `
+          <g class="guide-handle" onpointerdown="startDragGuide(event, 'y')">
+            <line x1="${pillX + 20}" y1="${gyPx}" x2="${w - padRight}" y2="${gyPx}" stroke="var(--guide-line)" stroke-width="2" stroke-dasharray="5,4" />
+            <rect x="${pillX}" y="${gyPx - 11}" width="20" height="22" rx="8.5" fill="var(--guide-pill)" />
+            <line x1="${pillX + 6}" y1="${gyPx - 2.5}" x2="${pillX + 14}" y2="${gyPx - 2.5}" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="${pillX + 6}" y1="${gyPx + 2.5}" x2="${pillX + 14}" y2="${gyPx + 2.5}" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+          </g>
+        `;
+      }
+
+      const guideControlsHtml = (!compactSize && (state.guideXVisible || state.guideYVisible))
+        ? `<div class="text-[11px] text-center mt-1.5" style="color: var(--text-muted);">
+             Dra i de blå reglagen i ytterkanten för att avläsa värden
+           </div>`
+        : '';
+
+      if (compactSize) {
+        return `
+          <div class="rounded-xl p-1.5 shadow-inner relative" style="background-color: var(--grid-bg); border: 1px solid var(--border-subtle);">
+            <span class="absolute top-2 left-2.5 px-2 py-0.5 rounded-md text-xs font-bold mono elevated-card"
+                  style="color: var(--accent-primary); border-color: var(--accent-primary-border);">
+              Graf ${task.letter}
+            </span>
+            <svg viewBox="0 0 ${w} ${h}" class="w-full h-auto select-none">
+              ${gridLines}
+              ${axisLabels}
+              ${axisExtras}
+              ${curvesSvg}
+            </svg>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="flex flex-col items-center">
+          <div class="rounded-xl p-1.5 shadow-inner" style="background-color: var(--grid-bg); border: 1px solid var(--border-subtle);">
+            <svg id="coordSvg" viewBox="0 0 ${w} ${h}" class="w-[290px] h-[285px] sm:w-[345px] sm:h-[340px] select-none">
+              ${gridLines}
+              ${axisLabels}
+              ${axisExtras}
+              ${curvesSvg}
+              ${guidesSvg}
+            </svg>
+          </div>
+          ${guideControlsHtml}
+        </div>
+      `;
+    }
+
+    let draggingAxis = null;
+
+    function startDragGuide(e, axis) {
+      e.preventDefault();
+      draggingAxis = axis;
+      window.addEventListener('pointermove', onDragGuide);
+      window.addEventListener('pointerup', stopDragGuide);
+    }
+
+    function onDragGuide(e) {
+      if (!draggingAxis || !state.task) return;
+      const svg = document.getElementById('coordSvg');
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const w = 380, h = 375;
+      const padLeft = 52, padRight = 24, padTop = 24, padBottom = 52;
+      const plotW = w - padLeft - padRight;
+      const plotH = h - padTop - padBottom;
+      const xMin = state.task.xMin ?? -2;
+      const xMax = state.task.xMax ?? 4;
+      const yMin = state.task.yMin ?? -10;
+      const yMax = state.task.yMax ?? 10;
+
+      if (draggingAxis === 'x') {
+        const relX = ((e.clientX - rect.left) / rect.width) * w;
+        let val = xMin + ((relX - padLeft) / plotW) * (xMax - xMin);
+        val = Math.max(xMin, Math.min(xMax, Math.round(val * 2) / 2));
+        if (val !== state.guideX) {
+          state.guideX = val;
+          renderWorkspace();
+        }
+      } else if (draggingAxis === 'y') {
+        const relY = ((e.clientY - rect.top) / rect.height) * h;
+        let val = yMax - ((relY - padTop) / plotH) * (yMax - yMin);
+        val = Math.max(yMin, Math.min(yMax, Math.round(val * 2) / 2));
+        if (val !== state.guideY) {
+          state.guideY = val;
+          renderWorkspace();
+        }
+      }
+    }
+
+    function stopDragGuide() {
+      draggingAxis = null;
+      window.removeEventListener('pointermove', onDragGuide);
+      window.removeEventListener('pointerup', stopDragGuide);
+    }
+
+    // =========================================================
+    // 11. UI COMPONENTS & WORKSPACE RENDERERS
+    // =========================================================
+    function renderShortcutButtons(task) {
+      const sub = getActiveSubTask(task);
+      const fnName = (sub && sub.fnName) || (task && task.fnName) || 'f';
+      const varChar = (sub && sub.varChar) || (task && task.varChar) || 'x';
+
+      const buttons = [
+        { id: '', label: `${fnName}( ) =`, val: `${fnName}() = ` },
+        { id: '', label: `${fnName}(${varChar}) =`, val: `${fnName}(${varChar}) = ` },
+        { id: '', label: `${varChar} =`, val: `${varChar} = ` },
+        { id: '', label: '·', val: ' · ' },
+        { id: 'supToggleBtn', label: '^', val: '^', title: 'Upphöjt till (exponent)' },
+        { id: '', label: ',', val: ',' }
+      ];
+
+      return `
+        <div class="mt-2.5">
+          <div class="flex flex-wrap items-center gap-1.5">
+            ${buttons.map(btn => `
+              <button type="button"
+                      ${btn.id ? `id="${btn.id}"` : ''}
+                      ${btn.title ? `title="${btn.title}"` : ''}
+                      onclick="insertSnippet('${btn.val}')"
+                      class="px-3 py-1.5 rounded-xl text-sm sm:text-base mono font-semibold elevated-card hover:opacity-80 transition">
+                ${btn.label}
+              </button>
+            `).join('')}
+          </div>
+          <div id="supModeIndicator" class="${state.isSuperscriptMode ? '' : 'hidden'} text-[11px] font-medium mt-1.5" style="color: var(--accent-primary);">
+            Upphöjt läge aktivt — tryck <kbd class="px-1 py-0.2 rounded elevated-card mono">→</kbd> eller <kbd class="px-1 py-0.2 rounded elevated-card mono">mellanslag</kbd> för att gå ner igen
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMathEditorBox(placeholder = '', widthClass = 'w-56 sm:w-64', disabled = false) {
+      return `
+        <div id="mathEditor"
+             contenteditable="${disabled ? 'false' : 'true'}"
+             data-disabled="${disabled ? 'true' : 'false'}"
+             data-placeholder="${placeholder}"
+             oninput="syncEditorStateFromDom()"
+             onkeydown="handleEditorKeyDown(event)"
+             onkeyup="syncEditorStateFromDom()"
+             onmouseup="syncEditorStateFromDom()"
+             class="math-editor ${widthClass} rounded-xl px-3.5 py-2.5 text-lg font-semibold flex items-center flex-wrap">${state.editorHtml}</div>
+      `;
+    }
+
+    function renderTaskStimulus(task) {
+      if (task.rep === 'formula' && task.formulaHtml) {
+        return `
+          <div class="elevated-card rounded-xl px-5 py-4 text-center mt-3 space-y-2">
+            <div>
+              <div class="text-xs uppercase tracking-wider font-medium mb-1" style="color: var(--text-muted);">Exponentialfunktion</div>
+              <div class="mono text-xl sm:text-2xl font-medium tracking-tight">${task.formulaHtml}</div>
+            </div>
+            ${state.substitutedLineHtml ? `
+              <div class="pt-2 border-t animate-in" style="border-color: var(--border-subtle);">
+                <div class="text-[11px] uppercase tracking-wider font-semibold mb-0.5" style="color: var(--accent-primary);">Insatt i formeln</div>
+                <div class="mono text-lg sm:text-xl font-bold" style="color: var(--accent-primary);">${state.substitutedLineHtml}</div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      if (task.fn) {
+        return `<div class="mt-2">${renderCoordinateGraph(task, false)}</div>`;
+      }
+
+      return '';
+    }
+
+    function renderLeftQuestionColumn(t) {
+      if (state.subPart !== null && t.partA && t.partB) {
+        const partAClasses = state.partADone ? 'opacity-65' : '';
+        const partBClasses = state.subPart === 'b' ? 'animate-in' : '';
+
+        return `
+          <div class="space-y-3 text-base sm:text-lg font-normal leading-relaxed">
+            <p>${t.stem}</p>
+            <div class="pl-3 border-l-2 space-y-2.5" style="border-color: var(--border-strong);">
+              <p class="${partAClasses}">${t.partA.prompt} ${state.partADone ? '<span class="text-xs font-semibold ml-1" style="color: var(--accent-emerald);">✓</span>' : ''}</p>
+              ${state.subPart === 'b' ? `<p class="${partBClasses}">${t.partB.prompt}</p>` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <h2 class="text-base sm:text-lg font-normal leading-relaxed">${t.prompt}</h2>
+        ${renderTaskStimulus(t)}
+      `;
+    }
+
+    function renderTabs() {
+      const container = document.getElementById('phaseTabs');
+      container.innerHTML = PHASES.map(ph => {
+        const isUnlocked = state.unlockedPhases[ph.id];
+        const isActive = state.currentPhase === ph.id;
+        const done = state.progress[ph.id];
+        const isComplete = done >= ph.target;
+
+        let borderStyle = 'border-color: var(--border-subtle);';
+        let bgStyle = 'background-color: var(--bg-surface);';
+        if (isActive) {
+          borderStyle = 'border-color: var(--accent-primary); box-shadow: 0 0 0 1px var(--accent-primary);';
+          bgStyle = 'background-color: var(--bg-elevated);';
+        }
+
+        return `
+          <button type="button"
+                  ${isUnlocked ? `onclick="switchPhase(${ph.id})"` : 'disabled'}
+                  style="${bgStyle} ${borderStyle}"
+                  class="rounded-xl px-3 py-2 text-left border transition flex flex-col justify-between ${isUnlocked ? 'cursor-pointer hover:opacity-95' : 'opacity-50 cursor-not-allowed'}">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-xs sm:text-sm font-bold truncate">${ph.title}</span>
+              <span class="text-xs mono font-semibold px-1.5 py-0.5 rounded"
+                    style="background-color: ${isComplete ? 'var(--accent-emerald-bg)' : 'var(--bg-input)'}; color: ${isComplete ? 'var(--accent-emerald)' : 'var(--text-secondary)'};">
+                ${isUnlocked ? `${done}/${ph.target}${isComplete ? ' ✓' : ''}` : '🔒'}
+              </span>
+            </div>
+            <div class="w-full h-1 rounded-full mt-1.5 overflow-hidden" style="background-color: var(--bg-input);">
+              <div class="h-full transition-all duration-300"
+                   style="width: ${Math.min(100, (done / ph.target) * 100)}%; background-color: ${isComplete ? 'var(--accent-emerald)' : 'var(--accent-primary)'};"></div>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderFeedbackBanner() {
+      if (!state.feedback) return '';
+      const { type, title, detail, showPositionBtn, showScaffoldBtn } = state.feedback;
+      const styles = {
+        success: { bg: 'var(--accent-emerald-bg)', border: 'var(--accent-emerald)', color: 'var(--accent-emerald)', icon: '✓' },
+        error: { bg: 'var(--accent-rose-bg)', border: 'var(--accent-rose)', color: 'var(--accent-rose)', icon: '✕' },
+        warn: { bg: 'rgba(251, 191, 36, 0.14)', border: 'var(--accent-amber)', color: 'var(--accent-amber)', icon: '!' }
+      }[type];
+
+      return `
+        <div class="rounded-xl p-3.5 mt-3 animate-in flex items-start gap-2.5 text-sm"
+             style="background-color: ${styles.bg}; border: 1.5px solid ${styles.border};">
+          <span class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 text-slate-950"
+                style="background-color: ${styles.color};">${styles.icon}</span>
+          <div class="flex-1">
+            <div class="font-bold" style="color: ${styles.color};">${title}</div>
+            <div class="mt-0.5 leading-snug" style="color: var(--text-primary);">${detail}</div>
+            ${(showPositionBtn || showScaffoldBtn) ? `
+              <div class="mt-2.5 flex flex-wrap gap-2">
+                ${showPositionBtn ? `
+                  <button type="button" onclick="openPositionModal()"
+                          class="px-3 py-1.5 rounded-lg text-xs font-bold elevated-card hover:opacity-90 flex items-center gap-1.5">
+                    <span>📊</span> <span>Visa positionssystemet</span>
+                  </button>
+                ` : ''}
+                ${showScaffoldBtn ? `
+                  <button type="button" onclick="openOptionalScaffold()"
+                          class="px-3 py-1.5 rounded-lg text-xs font-bold elevated-card hover:opacity-90 flex items-center gap-1.5">
+                    <span>🪜</span> <span>Bygg formeln steg för steg</span>
+                  </button>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNextButton(label = 'Nästa uppgift →') {
+      const p = state.currentPhase;
+      const target = PHASES[p - 1].target;
+      const justCompletedPhase = state.progress[p] >= target && p < 4 && !state.completedCelebrated[p];
+
+      if (justCompletedPhase) {
+        return `
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl"
+               style="background-color: var(--accent-primary-bg); border: 1px solid var(--accent-primary-border);">
+            <span class="text-sm font-semibold">
+              🎉 Fas ${p} klar (${target}/${target})! Nästa fas är nu upplåst.
+            </span>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="state.completedCelebrated[${p}] = true; generateNewTask(); renderAll();"
+                      class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold elevated-card hover:opacity-90">
+                Fortsätt öva här
+              </button>
+              <button type="button" onclick="state.completedCelebrated[${p}] = true; switchPhase(${p + 1});"
+                      class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-sky-600 hover:bg-sky-500">
+                Gå till ${PHASES[p].title} →
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="mt-4 flex justify-end">
+          <button type="button" onclick="generateNewTask(); renderAll();"
+                  class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-sky-600 hover:bg-sky-500 transition shadow-sm">
+            ${label}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderInterpretationCard(sub) {
+      if (!sub || !sub.interpretationOptions) return '';
+      if (!state.awaitingInterpretation && !state.interpretationDone) return '';
+
+      return `
+        <div class="rounded-xl p-4 elevated-card mt-3 animate-in">
+          <div class="text-xs font-bold uppercase tracking-wider mb-2.5" style="color: var(--text-secondary);">
+            Tolka svaret med ord · Vad innebär ditt resultat?
+          </div>
+          <div class="space-y-2">
+            ${sub.interpretationOptions.map((opt, idx) => {
+              const isSelected = state.interpretationSelectedIdx === idx;
+              let btnStyle = 'background-color: var(--bg-surface); border-color: var(--border-strong);';
+              if (state.interpretationDone && opt.correct) {
+                btnStyle = 'background-color: var(--accent-emerald-bg); border-color: var(--accent-emerald); color: var(--accent-emerald);';
+              } else if (isSelected && !opt.correct) {
+                btnStyle = 'background-color: var(--accent-rose-bg); border-color: var(--accent-rose);';
+              }
+
+              return `
+                <button type="button"
+                        ${state.interpretationDone ? 'disabled' : ''}
+                        onclick="handleInterpretationChoice(${idx})"
+                        style="${btnStyle}"
+                        class="w-full rounded-xl py-2.5 px-3.5 text-sm font-normal text-left border transition hover:opacity-95">
+                  ${opt.text}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderOptionalScaffoldCard(sub) {
+      if (!state.showOptionalScaffold || !sub.step1Opts) return '';
+      return `
+        <div class="space-y-2.5 mb-3 animate-in">
+          <div class="rounded-xl p-3.5 elevated-card">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-secondary);">
+                Steg 1 · ${sub.step1Q}
+              </span>
+              ${state.scaffoldStep1Done ? `<span class="text-xs font-bold" style="color: var(--accent-emerald);">✓ Klart</span>` : ''}
+            </div>
+            ${!state.scaffoldStep1Done ? `
+              <div class="grid grid-cols-3 gap-2">
+                ${sub.step1Opts.map(opt => `
+                  <button type="button" onclick="handleScaffoldStep1(${opt.correct})"
+                          class="rounded-xl py-2 px-3 text-sm mono font-semibold text-center border transition hover:opacity-90"
+                          style="background-color: var(--bg-surface); border-color: var(--border-strong);">
+                    ${opt.label}
+                  </button>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+
+          ${state.scaffoldStep1Done ? `
+            <div class="rounded-xl p-3.5 elevated-card animate-in">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-secondary);">
+                  Steg 2 · ${sub.step2Q}
+                </span>
+                ${state.scaffoldStep2Done ? `<span class="text-xs font-bold" style="color: var(--accent-emerald);">✓ Klart</span>` : ''}
+              </div>
+              ${!state.scaffoldStep2Done ? `
+                <div class="grid grid-cols-3 gap-2">
+                  ${sub.step2Opts.map(opt => `
+                    <button type="button" onclick="handleScaffoldStep2(${opt.correct})"
+                            class="rounded-xl py-2 px-3 text-sm mono font-semibold text-center border transition hover:opacity-90"
+                            style="background-color: var(--bg-surface); border-color: var(--border-strong);">
+                      ${opt.label}
+                    </button>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function renderWorkspace() {
+      const ws = document.getElementById('workspace');
+      const p = state.currentPhase;
+      const t = state.task;
+      if (!t) return;
+
+      // =========================================================
+      // PHASE 1: TWO-CHOICE CONCEPT, FF & DIRECTION CLASSIFICATION
+      // =========================================================
+      if (p === 1) {
+        const leftStimulus = t.fn ? renderTaskStimulus(t) : '';
+
+        ws.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <span class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg elevated-card" style="color: var(--text-secondary);">
+                ${t.badge}
+              </span>
+              <span class="text-xs" style="color: var(--text-muted);">
+                Snabbval: <kbd class="px-1.5 py-0.5 rounded elevated-card mono">1</kbd> eller <kbd class="px-1.5 py-0.5 rounded elevated-card mono">2</kbd>
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              <div class="md:col-span-6">
+                <h2 class="text-base sm:text-lg font-normal leading-relaxed">${t.prompt}</h2>
+                ${leftStimulus}
+              </div>
+
+              <div class="md:col-span-6">
+                <p class="text-base sm:text-lg font-bold text-center mb-4">
+                  Välj rätt alternativ:
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <button type="button"
+                          ${state.phase1Answered ? 'disabled' : ''}
+                          onclick="handlePhase1Choice('A')"
+                          class="${state.phase1Choice === 'A' ? 'btn-neutral-selected' : 'btn-neutral'} rounded-2xl min-h-[6.5rem] px-4 py-3 flex items-center justify-center text-center ${state.phase1Answered && state.phase1Choice !== 'A' ? 'opacity-45' : ''}">
+                    <span class="mono text-lg sm:text-xl font-bold leading-snug">${t.optA}</span>
+                  </button>
+
+                  <button type="button"
+                          ${state.phase1Answered ? 'disabled' : ''}
+                          onclick="handlePhase1Choice('B')"
+                          class="${state.phase1Choice === 'B' ? 'btn-neutral-selected' : 'btn-neutral'} rounded-2xl min-h-[6.5rem] px-4 py-3 flex items-center justify-center text-center ${state.phase1Answered && state.phase1Choice !== 'B' ? 'opacity-45' : ''}">
+                    <span class="mono text-lg sm:text-xl font-bold leading-snug">${t.optB}</span>
+                  </button>
+                </div>
+
+                ${renderFeedbackBanner()}
+              </div>
+            </div>
+          </div>
+
+          ${state.phase1Answered ? renderNextButton('Nästa uppgift (Enter) →') : '<div></div>'}
+        `;
+        return;
+      }
+
+      // =========================================================
+      // PHASE 2: GUIDED (2-STEP FORMEL · BERÄKNA + FORMULAS + GRAPH + WORD)
+      // =========================================================
+      if (p === 2) {
+        const sub = getActiveSubTask(t);
+        const inputDisabled = state.taskSolved || state.awaitingInterpretation;
+        const isTwoStepCalc = sub.mode === 'guided_two_step_calc';
+        const isFormulaWrite = sub.mode === 'write_formula';
+        const widthClass = (isFormulaWrite || (isTwoStepCalc && state.calcStep === 1)) ? 'w-60 sm:w-72' : 'w-48 sm:w-56';
+
+        let stepHeaderHtml = '';
+        if (isTwoStepCalc) {
+          if (state.calcStep === 1) {
+            stepHeaderHtml = `
+              <div class="mb-2.5">
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--accent-primary);">
+                  Steg 1 av 2 · Visa ersättningen av x
+                </span>
+                <p class="text-xs sm:text-sm mt-0.5" style="color: var(--text-secondary);">
+                  Skriv hela uttrycket med <span class="mono font-semibold">${sub.argVal}</span> insatt i stället för <span class="mono font-semibold">x</span> (t.ex. <span class="mono">f(${sub.argVal}) = ...</span>).
+                </p>
+              </div>
+            `;
+          } else {
+            stepHeaderHtml = `
+              <div class="mb-2.5">
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--accent-emerald);">
+                  Steg 2 av 2 · Beräkna värdet
+                </span>
+                <p class="text-xs sm:text-sm mt-0.5" style="color: var(--text-secondary);">
+                  Använd miniräknaren för att beräkna uttrycket och skriv svaret <span class="mono font-semibold">f(${sub.argVal}) = ...</span>
+                </p>
+              </div>
+            `;
+          }
+        } else if (state.subPart) {
+          stepHeaderHtml = `<div class="text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted);">Deluppgift ${state.subPart})</div>`;
+        }
+
+        ws.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg elevated-card" style="color: var(--text-secondary);">
+                ${t.badge}
+              </span>
+              <span class="text-xs" style="color: var(--text-muted);">Uppgift ${Math.min(state.progress[2] + 1, PHASES[1].target)} av ${PHASES[1].target}</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+              <div class="md:col-span-6">
+                ${renderLeftQuestionColumn(t)}
+              </div>
+
+              <div class="md:col-span-6">
+                ${renderOptionalScaffoldCard(sub)}
+                <div class="rounded-xl p-4 elevated-card animate-in">
+                  ${stepHeaderHtml}
+                  <div class="flex flex-wrap items-center gap-2.5">
+                    ${renderMathEditorBox('', widthClass, inputDisabled)}
+                    ${!inputDisabled ? `
+                      <button type="button" onclick="checkPhase2Answer()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition">
+                        ${isTwoStepCalc && state.calcStep === 1 ? 'Nästa steg' : 'Kontrollera'}
+                      </button>
+                    ` : ''}
+                  </div>
+                  ${!inputDisabled ? renderShortcutButtons(t) : ''}
+                </div>
+                ${renderInterpretationCard(sub)}
+                ${renderFeedbackBanner()}
+              </div>
+            </div>
+          </div>
+
+          ${state.taskSolved ? renderNextButton() : '<div></div>'}
+        `;
+        return;
+      }
+
+      // =========================================================
+      // PHASE 3: DIREKT (NO SCAFFOLDING + FADING GRAPH MATCH HINTS)
+      // =========================================================
+      if (p === 3) {
+        let rightAreaHtml = '';
+
+        if (t.subtype === 'match_graph_both') {
+          // Fading support: first 2 solved graph matches show parenthetical hints; afterward plain names!
+          const showTypeHints = state.graphMatchSolvedCount < 2;
+          const funcTypes = showTypeHints
+            ? [
+                { id: 'linear', label: 'Linjär funktion (rät linje)' },
+                { id: 'exponential', label: 'Exponentialfunktion (C · aˣ)' },
+                { id: 'quadratic', label: 'Andragradsfunktion (parabel)' }
+              ]
+            : [
+                { id: 'linear', label: 'Linjär funktion' },
+                { id: 'exponential', label: 'Exponentialfunktion' },
+                { id: 'quadratic', label: 'Andragradsfunktion' }
+              ];
+
+          rightAreaHtml = `
+            <div class="space-y-3.5">
+              <div class="rounded-xl p-3.5 elevated-card">
+                <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--text-secondary);">
+                  1. Vilken funktionstyp visar grafen?
+                </div>
+                <div class="space-y-2">
+                  ${funcTypes.map(ft => {
+                    const selected = state.selectedFuncType === ft.id;
+                    return `
+                      <button type="button"
+                              ${state.taskSolved ? 'disabled' : ''}
+                              onclick="state.selectedFuncType = '${ft.id}'; renderWorkspace();"
+                              class="${selected ? 'btn-neutral-selected' : 'btn-neutral'} w-full rounded-xl py-2 px-3.5 text-sm font-semibold text-left">
+                        ${ft.label}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+              <div class="rounded-xl p-3.5 elevated-card">
+                <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--text-secondary);">
+                  2. Vilken ekvation hör till grafen?
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  ${t.equations.map((eq, idx) => {
+                    const selected = state.selectedEqIdx === idx;
+                    return `
+                      <button type="button"
+                              ${state.taskSolved ? 'disabled' : ''}
+                              onclick="state.selectedEqIdx = ${idx}; renderWorkspace();"
+                              class="${selected ? 'btn-neutral-selected' : 'btn-neutral'} rounded-xl py-2.5 px-3 text-sm sm:text-base mono font-semibold text-center">
+                        ${eq.label}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+              ${!state.taskSolved ? `
+                <button type="button" onclick="checkPhase3Answer();"
+                        class="w-full py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition">
+                  Kontrollera
+                </button>
+              ` : ''}
+            </div>
+          `;
+        } else {
+          const sub = getActiveSubTask(t);
+          const inputDisabled = state.taskSolved || state.awaitingInterpretation;
+          const isFormulaWrite = (t.subtype === 'graph_build_exp') || (sub && sub.mode === 'write_formula');
+          const widthClass = isFormulaWrite ? 'w-60 sm:w-72' : 'w-48 sm:w-56';
+          const subPartTag = state.subPart
+            ? `<div class="text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted);">Deluppgift ${state.subPart})</div>`
+            : '';
+
+          rightAreaHtml = `
+            <div class="rounded-xl p-4 elevated-card">
+              ${subPartTag}
+              <div class="flex flex-wrap items-center gap-2.5">
+                ${renderMathEditorBox('', widthClass, inputDisabled)}
+                ${!inputDisabled ? `
+                  <button type="button" onclick="checkPhase3Answer()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition">
+                    Kontrollera
+                  </button>
+                ` : ''}
+              </div>
+              ${!inputDisabled ? renderShortcutButtons(t) : ''}
+            </div>
+            ${sub ? renderInterpretationCard(sub) : ''}
+          `;
+        }
+
+        const leftColumnHtml = t.subtype === 'match_graph_both'
+          ? `<h2 class="text-base sm:text-lg font-normal leading-relaxed">Para ihop grafen med rätt <strong>funktionstyp</strong> och rätt <strong>ekvation</strong>.</h2>
+             ${renderTaskStimulus(t)}`
+          : renderLeftQuestionColumn(t);
+
+        ws.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg elevated-card" style="color: var(--text-secondary);">
+                ${t.badge}
+              </span>
+              <span class="text-xs" style="color: var(--text-muted);">Uppgift ${Math.min(state.progress[3] + 1, PHASES[2].target)} av ${PHASES[2].target}</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+              <div class="md:col-span-6">
+                ${leftColumnHtml}
+              </div>
+
+              <div class="md:col-span-6">
+                ${rightAreaHtml}
+                ${renderFeedbackBanner()}
+              </div>
+            </div>
+          </div>
+
+          ${state.taskSolved ? renderNextButton() : '<div></div>'}
+        `;
+        return;
+      }
+
+      // =========================================================
+      // PHASE 4: 4-GRAPH MATCHING (A–D) & LINEAR VS EXPONENTIAL COMPARISON
+      // =========================================================
+      if (p === 4) {
+        if (t.subtype === 'match_four_graphs') {
+          const typeOptions = [
+            { value: '', label: 'Välj funktionstyp...' },
+            { value: 'exponential', label: 'Exponentialfunktion' },
+            { value: 'linear', label: 'Linjär funktion' },
+            { value: 'quadratic', label: 'Andragradsfunktion' }
+          ];
+
+          ws.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg elevated-card" style="color: var(--text-secondary);">
+                  ${t.badge}
+                </span>
+                <span class="text-xs" style="color: var(--text-muted);">Uppgift ${Math.min(state.progress[4] + 1, PHASES[3].target)} av ${PHASES[3].target}</span>
+              </div>
+
+              <h2 class="text-base sm:text-lg font-normal leading-relaxed mb-4">${t.prompt}</h2>
+
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- 2x2 GRID OF GRAPHS A, B, C, D -->
+                <div class="lg:col-span-7 grid grid-cols-2 gap-3">
+                  ${t.graphs.map(g => renderCoordinateGraph(g, true)).join('')}
+                </div>
+
+                <!-- MATCHING DROPDOWNS FOR A, B, C, D -->
+                <div class="lg:col-span-5 space-y-3">
+                  <div class="rounded-xl p-4 elevated-card space-y-3">
+                    ${t.graphs.map(g => {
+                      const currentVal = state.abcdSelections[g.letter];
+                      return `
+                        <div class="flex items-center justify-between gap-3">
+                          <span class="mono font-bold text-sm sm:text-base whitespace-nowrap">Graf ${g.letter}:</span>
+                          <select ${state.taskSolved ? 'disabled' : ''}
+                                  onchange="state.abcdSelections['${g.letter}'] = this.value; renderWorkspace();"
+                                  class="flex-1 rounded-xl px-3 py-2 text-sm font-semibold border transition"
+                                  style="background-color: var(--bg-input); border-color: var(--border-strong); color: var(--text-primary);">
+                            ${typeOptions.map(opt => `
+                              <option value="${opt.value}" ${currentVal === opt.value ? 'selected' : ''}>${opt.label}</option>
+                            `).join('')}
+                          </select>
+                        </div>
+                      `;
+                    }).join('')}
+
+                    ${!state.taskSolved ? `
+                      <button type="button" onclick="checkPhase4Answer()"
+                              class="w-full mt-2 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition">
+                        Kontrollera
+                      </button>
+                    ` : ''}
+                  </div>
+
+                  ${renderFeedbackBanner()}
+                </div>
+              </div>
+            </div>
+
+            ${state.taskSolved ? renderNextButton() : '<div></div>'}
+          `;
+          return;
+        }
+
+        // Compare linear vs exponential
+        ws.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg elevated-card" style="color: var(--text-secondary);">
+                ${t.badge}
+              </span>
+              <span class="text-xs" style="color: var(--text-muted);">Uppgift ${Math.min(state.progress[4] + 1, PHASES[3].target)} av ${PHASES[3].target}</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+              <div class="md:col-span-6">
+                <h2 class="text-base sm:text-lg font-normal leading-relaxed">${t.prompt}</h2>
+              </div>
+
+              <div class="md:col-span-6">
+                <div class="rounded-xl p-4 elevated-card">
+                  <div class="flex flex-wrap items-center gap-2.5">
+                    ${renderMathEditorBox('', 'w-48 sm:w-56', state.taskSolved)}
+                    ${!state.taskSolved ? `
+                      <button type="button" onclick="checkPhase4Answer()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition">
+                        Kontrollera
+                      </button>
+                    ` : ''}
+                  </div>
+                  ${!state.taskSolved ? renderShortcutButtons(t) : ''}
+                </div>
+                ${renderFeedbackBanner()}
+              </div>
+            </div>
+          </div>
+
+          ${state.taskSolved ? renderNextButton() : '<div></div>'}
+        `;
+      }
+    }
+
+    function placeCaretAtEnd(el) {
+      if (!el) return;
+      el.focus();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    function renderAll() {
+      renderTabs();
+      renderWorkspace();
+      if (!state.taskSolved && !state.awaitingInterpretation) {
+        const ed = document.getElementById('mathEditor');
+        if (ed && ed.getAttribute('contenteditable') === 'true') {
+          setTimeout(() => placeCaretAtEnd(ed), 20);
+        }
+      }
+    }
+
+    // =========================================================
+    // 12. BOOTSTRAP
+    // =========================================================
+    generateNewTask();
+    renderAll();
+  </script>
+</body>
+</html>
